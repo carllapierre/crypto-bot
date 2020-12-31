@@ -8,7 +8,7 @@ const fetch = require('node-fetch');
 exports.run = async (client, message, args) => {
     let arg1 = command.getOption(args, 1);   
 
-    if(arg1 == ""){
+    if(arg1 == "" || arg1 == "help"){
         handleHelp(message, args)
     }
     else{
@@ -18,7 +18,7 @@ exports.run = async (client, message, args) => {
 }
 
 const handleHelp = (message, args) => {
-    command.notYetImplemented(message)
+    command.sendHelp(message, coinCommand)
 }
 
 const handleCoin = (message, args) => {
@@ -68,4 +68,30 @@ const handleCoin = (message, args) => {
             command.alertCoin(message, json, arg1, defaultCurr)
         }      
     })
+}
+
+let coinCommand = {
+    commandName: 'coin',
+    optPrefix: '',
+    options: [
+    {
+        aliases: ['help'],
+        description: "Will return a list of possible commands.",
+        params: '',
+    },    
+    {
+        aliases: ['<cryptocurrency>'],
+        description: "Will return the value of the coin converted to USD by default. Some conversions to USD may not be supported.",
+        params: '',
+    },
+    {
+        aliases: ['<cryptocurrency> <{fiat currency} | btc | eth>'],
+        description: "Will return the value of the coin converted to the specified currency. Some conversions may not be supported.",
+        params: '',
+    },
+    {
+        aliases: ['<btc sat | sat btc> <amount> '],
+        description: "Will convert btc to satoshi coin and vice versa using the specified amount",
+        hide: true,
+    }]
 }

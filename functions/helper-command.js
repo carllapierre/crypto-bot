@@ -21,6 +21,29 @@ exports.alert = (message, msg) => {
     message.channel.send(embed);   
 }
 
+exports.sendHelp = (message, commandObj) => {
+    let embed = new Discord.RichEmbed()
+    embed.setTitle(':desktop: Command Helper');
+    embed.setColor("BLUE");
+    let commandHead = process.env.BOT_PREFIX + commandObj.commandName
+    for (i = 0; i < commandObj.options.length; i++) { 
+        
+        option = commandObj.options[i];
+        if(option.hide)
+            continue;
+        
+        alias =  option.aliases[0];
+        if(alias == '')
+        {
+            embed.addField(`${commandHead} ${option.params}`, option.description);      
+        }else
+            embed.addField(`${commandHead} ${commandObj.optPrefix + option.aliases[0]} ${option.params}`, option.description);
+    }   
+    message.channel.send(embed);   
+
+}
+
+
 exports.alertCoin = (message, response, symbol, currency) => {
     //https://bin.bnbstatic.com/static/images/home/coin-logo/BNB.png
     
