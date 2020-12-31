@@ -2,14 +2,11 @@
   "name": "crypto-bot",
   "version": "1.0.0",
   "description": "Crypto bot, here to give you the latest stats on most crypto currencies",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node bot.js"
   },
   "keywords": [],
   "author": "Carl Lapierre",
-  "license": "MIT",
   "dependencies": {
     "discord.js": "^11.5.1",
     "dotenv": "^8.2.0",
