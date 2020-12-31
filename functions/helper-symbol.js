@@ -1,7 +1,7 @@
 
 exports.getSymbol = (arg) => {
     let symbol = arg;
-    aliases.symbols.forEach(aSymbol => {
+    mapper.symbols.forEach(aSymbol => {
         aSymbol.aliases.forEach(alias => {
             if(alias.toLowerCase() == arg.toLowerCase()){
                 symbol = aSymbol.symbol;
@@ -13,7 +13,7 @@ exports.getSymbol = (arg) => {
 }
 
 
-const aliases = {
+const mapper = {
     symbols: [{
         symbol: "USDT",
         aliases: ["usdt", "us", "usd", "trumpcoin", "usa", "shitcoin", "american"]

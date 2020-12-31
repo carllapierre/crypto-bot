@@ -21,8 +21,7 @@ exports.alert = (message, msg) => {
 
 exports.alertCoin = (message, response, symbol, currency) => {
     //https://bin.bnbstatic.com/static/images/home/coin-logo/BNB.png
-    //const attachment = new Discord.MessageAttachment(`../content/coin-images/${symbol}.png`, 'coin.png');
-
+    
     let price = priceHelper.getFormattedPrice(response.lastPrice) 
     let change24h = response.priceChangePercent
     let high24h = priceHelper.getFormattedPrice(response.highPrice)
@@ -36,9 +35,9 @@ exports.alertCoin = (message, response, symbol, currency) => {
     embed.addField("24h High",high24h, true)
     embed.addField("24h Low" ,low24h, true) 
     embed.addField("Volume" ,Number.parseFloat(volume).toFixed(2), true) 
-    embed.setFooter(`Powered by CryptoBot!`)
+    embed.setFooter(`Powered by Canada Crypto!`)
     embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
-    embed.setAuthor(`${symbol} Price in ${currency} ${price}`, `attachment://${symbol.toLowerCase()}.png`)
+    embed.setAuthor(`${symbol} Price: ${price} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
     message.channel.send(embed);   
 }
 
