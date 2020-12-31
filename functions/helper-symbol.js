@@ -23,6 +23,10 @@ const aliases = {
         aliases: ["eth", "ether", "eth2", "eth2.0", "ethereum"]
     },
     {
+        symbol: "XRP",
+        aliases: ["xrp", "ripcoin", "rippledoff", "yikescoin"]
+    },
+    {
         symbol: "BTC",
         aliases: ["btc", "bitcoin", "bit"]
     }]
