@@ -1,6 +1,8 @@
 const priceHelper = require('../functions/helper-price')
 const Discord = require('discord.js')
-
+const fs = require('fs')
+const { isContext } = require('vm')
+const iconPath = './content/coin-images/'
 
 exports.getOption = (args, index) => {
     return (args.length > index?args[index]:'').toLowerCase()
@@ -36,8 +38,15 @@ exports.alertCoin = (message, response, symbol, currency) => {
     embed.addField("24h Low" ,low24h, true) 
     embed.addField("Volume" ,Number.parseFloat(volume).toFixed(2), true) 
     embed.setFooter(`Powered by Canada Crypto!`)
-    embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
-    embed.setAuthor(`${symbol} Price: ${price} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
+
+    if(iconExists(symbol)){
+        embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
+        embed.setAuthor(`${symbol} Price: ${price} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
+    }else
+    {
+        embed.setAuthor(`${symbol} Price: ${price} ${currency}`)
+    }
+
     message.channel.send(embed);   
 }
 
@@ -50,3 +59,10 @@ exports.embedMessage = (message, text) => {
     message.channel.send(embed);   
 }
 
+const iconExists = (symbol) => {
+    try {
+        return fs.existsSync(`${iconPath}${symbol}.png`)  
+    } catch(err) {
+    console.error(err)
+    }
+}
