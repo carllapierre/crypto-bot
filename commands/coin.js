@@ -3,7 +3,6 @@ const symbolHelper = require('../functions/helper-symbol')
 
 const Discord = require('discord.js')
 const fetch = require('node-fetch');
-const { unlink } = require('fs/promises');
 
 exports.run = async (client, message, args) => {
     let arg1 = command.getOption(args, 1);   
