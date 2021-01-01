@@ -62,13 +62,13 @@ exports.alertCoin = (message, response, symbol, currency) => {
     embed.addField("Volume" ,Number.parseFloat(volume).toFixed(2), true) 
     embed.setFooter(`Powered by Canada Crypto!`)
 
-    if(iconExists(symbol)){
+    //if(iconExists(symbol)){
         embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
         embed.setAuthor(`${symbol} Price: ${price} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
-    }else
-    {
-        embed.setAuthor(`${symbol} Price: ${price} ${currency}`)
-    }
+    //}else
+    //{
+    //    embed.setAuthor(`${symbol} Price: ${price} ${currency}`)
+    //}
 
     message.channel.send(embed);   
 }
