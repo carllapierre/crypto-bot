@@ -26,6 +26,7 @@ const handleCoin = (message, args) => {
 
     let arg1 =  symbolHelper.getSymbol(command.getOption(args, 1))
     let arg2 =  command.getOption(args, 2)
+    let arg3 =  command.getOption(args, 3)
     
     //if supported fiat, do usd query and exchange later
     //if non fiat, might be crypto, query with arg to see if anything matches
@@ -60,12 +61,23 @@ const handleCoin = (message, args) => {
                 json.lastPrice = json.lastPrice * json2.rates[arg2]
                 json.highPrice = json.highPrice * json2.rates[arg2]
                 json.lowPrice  = json.lowPrice  * json2.rates[arg2]
-                command.alertCoin(message, json, arg1, arg2)     
+
+                if(!isNaN(arg3) && arg3 != ""){
+                    command.alertCoinAmount(message, json, arg1, arg2, arg3)
+                }else
+                {
+                    command.alertCoin(message, json, arg1, arg2)   
+                }
+                  
             })
             
         }else
         {
-            command.alertCoin(message, json, arg1, defaultCurr)
+            if(!isNaN(arg3) && arg3 != "")
+            {
+                command.alertCoinAmount(message, json, arg1, defaultCurr, arg3)
+            }else
+                command.alertCoin(message, json, arg1, defaultCurr)    
         }      
     })
 }
@@ -85,8 +97,13 @@ let coinCommand = {
         params: '',
     },
     {
-        aliases: ['<cryptocurrency> <{fiat currency} | btc | eth>'],
+        aliases: ['<cryptocurrency> <fiat | btc>'],
         description: "Will return the value of the coin converted to the specified currency. Some conversions may not be supported.",
+        params: '',
+    },
+    {
+        aliases: ['<cryptocurrency | fiat> <cryptocurrency | fiat> <amount>'],
+        description: "Will convert the specified amount using the specified currencies",
         params: '',
     },
     {

@@ -43,9 +43,7 @@ exports.sendHelp = (message, commandObj) => {
 
 }
 
-
 exports.alertCoin = (message, response, symbol, currency) => {
-    //https://bin.bnbstatic.com/static/images/home/coin-logo/BNB.png
     
     let price = priceHelper.getFormattedPrice(response.lastPrice) 
     let change24h = response.priceChangePercent
@@ -62,13 +60,32 @@ exports.alertCoin = (message, response, symbol, currency) => {
     embed.addField("Volume" ,Number.parseFloat(volume).toFixed(2), true) 
     embed.setFooter(`Powered by Canada Crypto!`)
 
-    //if(iconExists(symbol)){
+    try{
         embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
         embed.setAuthor(`${symbol} Price: ${price} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
-    //}else
-    //{
-    //    embed.setAuthor(`${symbol} Price: ${price} ${currency}`)
-    //}
+    }catch (err)
+    {
+        embed.setAuthor(`${symbol} Price: ${price} ${currency}`)
+    }
+
+    message.channel.send(embed);   
+}
+
+exports.alertCoinAmount = (message, response, symbol, currency, amount) => {
+    
+    let price = priceHelper.getFormattedPrice(response.lastPrice) 
+
+    let embed = new Discord.RichEmbed()
+    embed.setColor("BLUE");
+    embed.setFooter(`Powered by Canada Crypto!`)
+
+    try{
+        embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
+        embed.setAuthor(`${amount} ${symbol} is worth ${priceHelper.getFormattedPrice(price*amount)} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
+    }catch (err)
+    {
+        embed.setAuthor(`${amount} ${symbol} is worth ${priceHelper.getFormattedPrice(price*amount)} ${currency}`)
+    }
 
     message.channel.send(embed);   
 }
