@@ -76,7 +76,7 @@ exports.alertNoCanDoBTC = (message) => {
     embed.setColor("BLUE");
     embed.setFooter(`Powered by Canada Crypto!`)
     embed.attachFile(`./content/coin-images/BTC.png`)
-    embed.setAuthor(`Supply is limited to 21 million you dingo!`, `attachment://BTC.png`)
+    embed.setAuthor(`Supply is limited to 21 million dumbo!`, `attachment://BTC.png`)
 
     message.channel.send(embed);  
 }
