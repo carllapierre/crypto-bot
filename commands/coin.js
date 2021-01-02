@@ -27,6 +27,11 @@ const handleCoin = (message, args) => {
     let arg1 =  symbolHelper.getSymbol(command.getOption(args, 1))
     let arg2 =  command.getOption(args, 2)
     let arg3 =  command.getOption(args, 3)
+
+    if(arg1.toUpperCase() == "BTC" && arg3 > 21000000){
+        command.alertNoCanDoBTC(message);
+        return
+    }
     
     //if supported fiat, do usd query and exchange later
     //if non fiat, might be crypto, query with arg to see if anything matches

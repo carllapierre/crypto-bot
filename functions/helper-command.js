@@ -71,6 +71,16 @@ exports.alertCoin = (message, response, symbol, currency) => {
     message.channel.send(embed);   
 }
 
+exports.alertNoCanDoBTC = (message) => {
+    let embed = new Discord.RichEmbed()
+    embed.setColor("BLUE");
+    embed.setFooter(`Powered by Canada Crypto!`)
+    embed.attachFile(`./content/coin-images/BTC.png`)
+    embed.setAuthor(`Supply is limited to 21 million you dingo!`, `attachment://BTC.png`)
+
+    message.channel.send(embed);  
+}
+
 exports.alertCoinAmount = (message, response, symbol, currency, amount) => {
     
     let price = priceHelper.getFormattedPrice(response.lastPrice) 
