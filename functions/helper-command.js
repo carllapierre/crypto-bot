@@ -75,8 +75,8 @@ exports.alertNoCanDoBTC = (message) => {
     let embed = new Discord.RichEmbed()
     embed.setColor("BLUE");
     embed.setFooter(`Powered by Canada Crypto!`)
-    embed.attachFile(`./content/coin-images/BTC.png`)
-    embed.setAuthor(`Supply is limited to 21 million dumbo!`, `attachment://BTC.png`)
+    embed.attachFile(`./content/coin-images/btc.png`)
+    embed.setAuthor(`Supply is limited to 21 million dumbo!`, `attachment://btc.png`)
 
     message.channel.send(embed);  
 }
