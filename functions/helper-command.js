@@ -111,8 +111,7 @@ exports.embedMessage = (message, text) => {
 
 exports.alertCandidates = (message, results) => {
     let embed = new Discord.RichEmbed()
-    
-    console.log(results)
+
     embed.setFooter(`Powered by Canada Crypto!`)
 
     if (results.length === 0) {
