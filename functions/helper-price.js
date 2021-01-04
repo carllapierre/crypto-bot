@@ -1,7 +1,15 @@
+const request = require('sync-request')
+
 exports.getFormattedPrice = (price) => {
     if(price >= 1)
         return Number.parseFloat(price).toFixed(2)
     return Number.parseFloat(price).toPrecision(2)
+}
+
+exports.getExchangeRate = (fiat) => {
+    var res= request('GET',`https://api.exchangeratesapi.io/latest?base=USD&symbols=${fiat}`)
+    var json = JSON.parse(res.getBody('utf8'))
+    return json.rates[fiat];
 }
 
 //Determines if the string is a valid FIAT
@@ -23,6 +31,10 @@ exports.getSupportedFiats = () => {
 }
 
 const supportedFiats = [
+    {
+        fiat: "USDT",
+        display: "USD"
+    },
     {
         fiat: "CAD",
         display: "CAD"

@@ -1,3 +1,4 @@
+const request = require('sync-request')
 
 exports.getSymbol = (arg) => {
     let symbol = arg;
@@ -12,6 +13,32 @@ exports.getSymbol = (arg) => {
     return symbol.toUpperCase();
 }
 
+exports.getTickerInfo = (symbol) => {
+    var res= request('GET',`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`)
+    var json = JSON.parse(res.getBody('utf8'))
+
+    return json;
+}
+
+exports.findSymbolOnExchange = (symbol, baseAsset) => {
+    var exInfo = getExchangeInfo()
+    //prioritize base asset
+    var coin = exInfo.symbols.find(x=>x.status == 'TRADING' && x.baseAsset == symbol && x.quoteAsset == baseAsset)
+    if(!coin){
+        coin = exInfo.symbols.find(x=>x.status == 'TRADING' && x.baseAsset == symbol)
+    }
+    if(coin)
+        return {
+            symbol: symbol,
+            quoteAsset: coin.quoteAsset
+        } 
+}
+
+
+const getExchangeInfo = () =>{
+    var res= request('GET',`https://www.binance.com/api/v1/exchangeInfo`)
+    return JSON.parse(res.getBody('utf8'))
+}
 
 const mapper = {
     symbols: [{
