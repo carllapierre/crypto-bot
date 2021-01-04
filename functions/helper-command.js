@@ -104,8 +104,34 @@ exports.embedMessage = (message, text) => {
     let embed = new Discord.RichEmbed()
     embed.setColor("BLUE");
     for (i = 0; i < text.length; i++) {
-        embed.setDescription(text[i]);      
+        embed.addField(text[i]);      
     }   
+    message.channel.send(embed);   
+}
+
+exports.alertCandidates = (message, results) => {
+    let embed = new Discord.RichEmbed()
+    
+    console.log(results)
+    embed.setFooter(`Powered by Canada Crypto!`)
+
+    if (results.length === 0) {
+        embed.setColor("RED");
+        embed.setTitle("Couldnd't find any candidates :frowning:")
+    }
+    else{
+        embed.setTitle("Pump and Dump Candidates")
+        embed.setColor("BLUE");
+
+        var count = 0;
+        results.forEach(candidate => {
+            if(count <25){
+                embed.addField(`${count + 1}. ${candidate.name} (${candidate.symbol})`, `Market cap: ${candidate.cap}`);
+            }
+            count++
+        })
+    }
+
     message.channel.send(embed);   
 }
 
