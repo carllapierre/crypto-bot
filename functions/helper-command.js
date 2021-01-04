@@ -3,6 +3,7 @@ const Discord = require('discord.js')
 const fs = require('fs')
 const { isContext } = require('vm')
 const iconPath = './content/coin-images/'
+const URL_COINMARKET = `https://coinmarketcap.com/currencies/`;
 
 exports.getOption = (args, index) => {
     return (args.length > index?args[index]:'').toLowerCase()
@@ -60,10 +61,10 @@ exports.alertCoin = (message, response, symbol, currency) => {
     embed.addField("Volume" ,Number.parseFloat(volume).toFixed(2), true) 
     embed.setFooter(`Powered by Canada Crypto!`)
 
-    try{
+    if(iconExists(symbol)){
         embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
         embed.setAuthor(`${symbol} Price: ${price} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
-    }catch (err)
+    }else
     {
         embed.setAuthor(`${symbol} Price: ${price} ${currency}`)
     }
@@ -88,14 +89,14 @@ exports.alertCoinAmount = (message, response, symbol, currency, amount) => {
     let embed = new Discord.RichEmbed()
     embed.setColor("BLUE");
     embed.setFooter(`Powered by Canada Crypto!`)
-
-    try{
+    console.log(iconExists(symbol))
+    if(iconExists(symbol)){
         embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
         embed.setAuthor(`${amount} ${symbol} is worth ${priceHelper.getFormattedPrice(price*amount)} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
-    }catch (err)
-    {
-        embed.setAuthor(`${amount} ${symbol} is worth ${priceHelper.getFormattedPrice(price*amount)} ${currency}`)
     }
+    else
+        embed.setAuthor(`${amount} ${symbol} is worth ${priceHelper.getFormattedPrice(price*amount)} ${currency}`)
+    
 
     message.channel.send(embed);   
 }
@@ -120,12 +121,19 @@ exports.alertCandidates = (message, results) => {
     }
     else{
         embed.setTitle("Pump and Dump Candidates")
+        if(results.length > 25){
+            embed.setDescription(`Showing 25 of ${results.length} due to Discord message limitations. Consider narrowing the range.`)
+        }
         embed.setColor("BLUE");
 
         var count = 0;
+
         results.forEach(candidate => {
             if(count <25){
-                embed.addField(`${count + 1}. ${candidate.name} (${candidate.symbol})`, `Market cap: ${candidate.cap}`);
+                var vol = candidate.vol > 0? "+" + candidate.vol : candidate.vol
+
+                embed.addField(`${count + 1}. ${candidate.name} (${candidate.symbol})`, 
+                `${vol>0?":green_square:":":red_square: "} Volume (7d) ${vol}% [Market cap: ${candidate.cap}](${URL_COINMARKET + candidate.name.replace(/\s+/g, '-').toLowerCase()})`);
             }
             count++
         })
@@ -136,7 +144,7 @@ exports.alertCandidates = (message, results) => {
 
 const iconExists = (symbol) => {
     try {
-        return fs.existsSync(`${iconPath}${symbol}.png`)  
+        return fs.existsSync(`${iconPath}${symbol.toLowerCase()}.png`)  
     } catch(err) {
     console.error(err)
     }

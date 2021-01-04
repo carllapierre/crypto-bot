@@ -1,9 +1,8 @@
 const command = require('../functions/helper-command')
-const symbolHelper = require('../functions/helper-symbol')
-const priceHelper = require('../functions/helper-price')
-
 const Discord = require('discord.js')
 const fetch = require('node-fetch');
+
+
 
 exports.run = async (client, message, args) => {
 
@@ -41,11 +40,26 @@ const handlePumpwatch = (message, mincap, maxcap) => {
           function(u2){ return u2.json();}
         ).then(
           function(exchangeInfo){  
-            console.log(coins.data.length)
+
             coins.data.forEach(coin => {
                const candidate = exchangeInfo.symbols.find(x=>x.status == 'TRADING' && x.symbol == `${coin.symbol}BTC`)
-               if(candidate)
-                    collection.push({name: coin.name, cap: coin.quote.USD.market_cap.toFixed(2), symbol: candidate.symbol })
+               if(candidate){
+                    var obj = {name: coin.name, 
+                               cap: coin.quote.USD.market_cap.toFixed(2), 
+                               symbol: coin.symbol, 
+                               vol:  parseFloat(coin.quote.USD.percent_change_7d.toFixed(2), 10)}
+                    if(collection.length == 0){
+                        collection.push(obj)
+                    }
+                    else{
+                        var index = collection.findIndex(x=>x.vol < obj.vol)
+                        if(index == -1)
+                            collection.push(obj)
+                        else{
+                            collection.splice(index, 0, obj);
+                        }
+                    }
+               }
             })
    
             command.alertCandidates(message, collection) 
