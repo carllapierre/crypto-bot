@@ -3,6 +3,7 @@ const symbolHelper = require('../functions/helper-symbol')
 const priceHelper  = require('../functions/helper-price')
 const Discord      = require('discord.js')
 const fetch        = require('node-fetch');
+const request      = require('sync-request')
 const BASE_ASSET    = "USDT"
 
 exports.run = async (client, message, args) => {
@@ -13,6 +14,9 @@ exports.run = async (client, message, args) => {
             break
         case "info":
             handleInfo(message, parsed)
+            break
+        case "trending":
+            handleTrending(message, parsed)
             break
         case "conversion":
             handleConversion(message, parsed)
@@ -69,6 +73,13 @@ const handleInfo = (message, parsed) => {
 const handleConversion = (message, parsed) => {
     command.notYetImplemented(message);
 }
+const handleTrending = (message, parsed) => {
+    var res= request('GET',`https://api.coingecko.com/api/v3/search/trending`)
+    var json = JSON.parse(res.getBody('utf8'))
+
+    command.alertTrendingCoins(message, json) 
+    return json;
+}
 
 const alterPrice = (ticker, price) => {
     ticker.lastPrice = ticker.lastPrice * price
@@ -91,10 +102,16 @@ const analyzeParams = (args) => {
     }
 
     //immediately support help arg to avoid all the work
-    if(args.length == 1 || command.getOption(args, 1) == "help"){
+    if(args.length == 1 || command.getOption(args, 1).toLowerCase() == "help"){
         paramInfo.type = "help"
         return paramInfo;
     }
+
+    if(args.length >= 2 && command.getOption(args, 1).toLowerCase() == "trending"){
+        paramInfo.type = "trending"
+        return paramInfo;
+    }
+
 
     //give a type to all arguments
     for (var i = 1; i < args.length; i++){
@@ -191,6 +208,11 @@ let coinCommand = {
         description: "Will return a list of possible commands.",
         params: '',
     },    
+    {
+        aliases: ['trending'],
+        description: "Will return top 7 trending coins via CoinGecko",
+        params: '',
+    },
     {
         aliases: ['<cryptocurrency>'],
         description: "Will return the value of the coin converted to USD by default. Some conversions to USD may not be supported.",

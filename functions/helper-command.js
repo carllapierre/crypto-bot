@@ -1,4 +1,5 @@
 const priceHelper = require('../functions/helper-price')
+const symbolHelper = require('../functions/helper-symbol')
 const Discord = require('discord.js')
 const fs = require('fs')
 const { isContext } = require('vm')
@@ -89,7 +90,7 @@ exports.alertCoinAmount = (message, response, symbol, currency, amount) => {
     let embed = new Discord.RichEmbed()
     embed.setColor("BLUE");
     embed.setFooter(`Powered by Canada Crypto!`)
-    console.log(iconExists(symbol))
+
     if(iconExists(symbol)){
         embed.attachFile(`./content/coin-images/${symbol.toLowerCase()}.png`)
         embed.setAuthor(`${amount} ${symbol} is worth ${priceHelper.getFormattedPrice(price*amount)} ${currency}`, `attachment://${symbol.toLowerCase()}.png`)
@@ -107,6 +108,34 @@ exports.embedMessage = (message, text) => {
     for (i = 0; i < text.length; i++) {
         embed.addField(text[i]);      
     }   
+    message.channel.send(embed);   
+}
+
+exports.alertTrendingCoins = (message, json) => {
+    let embed = new Discord.RichEmbed()
+
+    embed.setFooter(`Powered by Canada Crypto!`)
+
+    if (json.coins.length === 0) {
+        embed.setColor("RED");
+        embed.setTitle("Couldnd't find any trending coins :frowning:")
+    }
+    else{
+        embed.setTitle(":earth_americas: Top 7 Trending Coins")
+        embed.setDescription(`Top-7 trending coins via CoinGecko as searched by users in the last 24 hours (Ordered by most popular first)`)   
+        embed.setColor("BLUE");
+
+        var count = 0;
+        json.coins.forEach(coin => {
+            if(count <25){
+                info = symbolHelper.getGeckoDetails(coin.item.id)
+                var vol = info.volpercent > 0? "+" + info.volpercent.toFixed(2) : info.volpercent.toFixed(2)
+                embed.addField(`${count + 1}. ${coin.item.name} (${coin.item.symbol})`, `${info.volpercent>0?":green_square:":":red_square: "} Volume (7d) ${vol}% - Price: ${priceHelper.getFormattedPrice(info.price)} USD`);
+            }
+            count++
+        })
+    }
+
     message.channel.send(embed);   
 }
 

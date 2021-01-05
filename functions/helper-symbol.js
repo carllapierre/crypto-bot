@@ -34,6 +34,17 @@ exports.findSymbolOnExchange = (symbol, baseAsset) => {
         } 
 }
 
+exports.getGeckoDetails = (id) => {
+
+    var res= request('GET',`https://api.coingecko.com/api/v3/coins/${id.toLowerCase()}/market_chart?vs_currency=usd&days=1&interval=daily`)
+    var json = JSON.parse(res.getBody('utf8'))
+
+    return {
+        price: json.prices[1][1],
+        volpercent: ((json.market_caps[1][1] - json.market_caps[0][1]) / json.market_caps[0][1] * 100),
+        marketcap: json.market_caps[1][1]
+    }
+}
 
 const getExchangeInfo = () =>{
     var res= request('GET',`https://www.binance.com/api/v1/exchangeInfo`)

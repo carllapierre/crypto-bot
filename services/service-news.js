@@ -93,7 +93,7 @@ const formatNews = (news) => {
 
         embed.setTitle(`${element.title}`)
         embed.attachFile(`./content/coin-images/${currency.code.toLowerCase()}.png`)
-        embed.setFooter(`${currency.title} | Canada Crypto`, `attachment://${currency.code.toLowerCase()}.png`)
+        embed.setFooter(`${currency.title} | Crypto Canada`, `attachment://${currency.code.toLowerCase()}.png`)
 
         posts.push(embed)
     });
