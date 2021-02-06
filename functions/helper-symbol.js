@@ -25,11 +25,11 @@ exports.getTickerInfoZap = () => {
     var json = JSON.parse(res.getBody('utf8'))
 
     return {
-        lastprice: json.zap.usd,
+        lastprice: `${json.zap.usd}`,
         highprice:"0",
         lowprice:"0",
         priceChangePercent: json.zap.usd_24h_change,
-        volume: json.zap.usd_24h_vol
+        volume:`${json.zap.usd_24h_vol}` 
     };
 }
 
