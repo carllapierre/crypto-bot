@@ -39,7 +39,19 @@ const handleDefault = (message, parsed) => {
     command.alert(message, parsed.error);
 }
 const handleInfo = (message, parsed) => {
-    var tickerInfo = symbolHelper.getTickerInfo(parsed.arguments[0].value + parsed.arguments[0].quoteAsset)
+    var tickerInfo;
+    if(parsed.arguments[0].value.toLowerCase() == "zap")
+    {
+        tickerInfo = symbolHelper.getTickerInfoZap()
+        command.alertCoin(message, tickerInfo, parsed.arguments[0].value, parsed.arguments[0].quoteAsset)   
+        return;
+    }
+    else
+    {
+        tickerInfo = symbolHelper.getTickerInfo(parsed.arguments[0].value + parsed.arguments[0].quoteAsset)
+    }
+
+
     //try and convert to base asset
     if(parsed.arguments[0].quoteAsset != BASE_ASSET)
     {

@@ -20,8 +20,29 @@ exports.getTickerInfo = (symbol) => {
     return json;
 }
 
+exports.getTickerInfoZap = () => {
+    var res= request('GET',`https://api.coingecko.com/api/v3/simple/price?ids=zap&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true`)
+    var json = JSON.parse(res.getBody('utf8'))
+
+    return {
+        lastprice: json.zap.usd,
+        highprice:"0",
+        lowprice:"0",
+        priceChangePercent: json.zap.usd_24h_change,
+        volume: json.zap.usd_24h_vol
+    };
+}
+
+
 exports.findSymbolOnExchange = (symbol, baseAsset) => {
     var exInfo = getExchangeInfo()
+
+    if(symbol.toLowerCase() == "zap")
+        return {
+            symbol: symbol,
+            quoteAsset: baseAsset
+        } 
+
     //prioritize base asset
     var coin = exInfo.symbols.find(x=>x.status == 'TRADING' && x.baseAsset == symbol && x.quoteAsset == baseAsset)
     if(!coin){
