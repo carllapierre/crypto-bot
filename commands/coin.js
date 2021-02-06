@@ -43,6 +43,7 @@ const handleInfo = (message, parsed) => {
     if(parsed.arguments[0].value.toLowerCase() == "zap")
     {
         tickerInfo = symbolHelper.getTickerInfoZap()
+        console.log(tickerInfo)
         command.alertCoin(message, tickerInfo, parsed.arguments[0].value, parsed.arguments[0].quoteAsset)   
         return;
     }
