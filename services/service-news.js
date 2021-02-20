@@ -91,7 +91,7 @@ const formatNews = (news) => {
                 currency = element.currencies[0]
             }
         }
-        if(currency.code.toLowerCase() != "bnb"){
+        if(currency.code.toLowerCase() != "bnb" && currency.title != "Binance Coin"){
             embed.setTitle(`${element.title}`)
             embed.setURL(`${element.url}`)
             embed.attachFile(`./content/coin-images/${currency.code.toLowerCase()}.png`)
