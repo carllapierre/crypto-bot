@@ -91,14 +91,14 @@ const formatNews = (news) => {
                 currency = element.currencies[0]
             }
         }
-        if(currency.code.toLowerCase() != "bnb" && currency.title != "Binance Coin"){
-            embed.setTitle(`${element.title}`)
-            embed.setURL(`${element.url}`)
-            embed.attachFile(`./content/coin-images/${currency.code.toLowerCase()}.png`)
-            embed.setFooter(`${currency.title} | Crypto Canada`, `attachment://${currency.code.toLowerCase()}.png`)
 
-            posts.push(embed)
-        }
+        embed.setTitle(`${element.title}`)
+        embed.setURL(`${element.url}`)
+        embed.attachFile(`./content/coin-images/${currency.code.toLowerCase()}.png`)
+        embed.setFooter(`${currency.title} | Crypto Canada`, `attachment://${currency.code.toLowerCase()}.png`)
+
+        posts.push(embed)
+        
     });
 
     return posts;

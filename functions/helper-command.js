@@ -22,6 +22,15 @@ exports.alert = (message, msg) => {
     embed.setDescription(`:rotating_light: ${msg}`);      
     message.channel.send(embed);   
 }
+exports.alertPool = (message) => {
+    let embed = new Discord.RichEmbed()
+    embed.setColor("BLUE");
+    embed.setDescription(`Hey you! Yeah you! Do you have some ADA laying around? Did you know you can stake your ADA without locking it? It won't cost you anything and you will get rewarded by doing so! If you're interested, Crypto Canada is running its very own high availability pool managed by IT professionals and DeFi enthusiasts! Check out the following links for more information. Stake Pool: [[CADA]](https://cadapool.com/) More Info on Staking: [Cardano Website](https://cardano.org/calculator/?calculator=delegator)`);
+    embed.attachFile(`./content/coin-images/ada.png`)
+    embed.setAuthor(`[CADA] Stake Pool`, `attachment://ada.png`)
+    embed.setFooter(`Powered by Canada Crypto!`)
+    message.channel.send(embed);   
+}
 
 exports.sendHelp = (message, commandObj) => {
     let embed = new Discord.RichEmbed()
