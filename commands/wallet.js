@@ -84,7 +84,7 @@ let walletCommand = {
         params: '',
     },
     {
-        aliases: ['show chart'],
+        aliases: ['chart'],
         description: "Will present a pie chart of your holdings (with no amount, just %), in the channel where command was entered.",
         params: '',
     },
@@ -149,9 +149,12 @@ const analyzeParams = (args) => {
         paramInfo.type = "show";
         if (command.getOption(args,2).toLowerCase() == "public") {
             paramInfo.type = "showPublic";
-        } else if (command.getOption(args,2).toLowerCase() == "chart" || command.getOption(args,2).toLowerCase() == "holdings") {
-            paramInfo.type = "showChart";
         }
+        return paramInfo;
+    }
+
+    if (command.getOption(args,1).toLowerCase() == "chart" || command.getOption(args,1).toLowerCase() == "holdings") {
+        paramInfo.type = "showChart";
         return paramInfo;
     }
 
