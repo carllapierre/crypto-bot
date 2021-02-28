@@ -11,8 +11,13 @@ const walletSchema = new mongoose.Schema({
     holding: {
         type: Map,
         of: Number
+    },
+    preferences: {
+      currency: {
+        type: String,
+        default: 'CAD'
+      }
     }
-
 }, {
     timestamps: true,
 });

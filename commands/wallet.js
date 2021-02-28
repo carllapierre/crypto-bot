@@ -45,6 +45,12 @@ exports.run = async (client, message, args) => {
         case "showPublic":
             controller.showPublic(message, parsed);
             break
+        case "showChart":
+            controller.showChart(message, parsed);
+            break
+        case "changeCurrency":
+                controller.changeCurrencyDefault(message, parsed);
+                break
         case "fiat-error":
             command.alert(message, parsed.error);
             break
@@ -78,8 +84,18 @@ let walletCommand = {
         params: '',
     },
     {
+        aliases: ['show chart'],
+        description: "Will present a pie chart of your holdings (with no amount, just %), in the channel where command was entered.",
+        params: '',
+    },
+    {
         aliases: ['delete'],
         description: "Will delete your wallet from our database. You can direct message the bot as well.",
+        params: '',
+    },
+    {
+        aliases: ['defcurrency <fiat currency>'],
+        description: "Change your wallet's default currency for reporting.",
         params: '',
     },
     {
@@ -130,9 +146,11 @@ const analyzeParams = (args) => {
     }
 
     if(command.getOption(args, 1).toLowerCase() == "show") {
-        paramInfo.type = "show"
+        paramInfo.type = "show";
         if (command.getOption(args,2).toLowerCase() == "public") {
-            paramInfo.type = "showPublic"
+            paramInfo.type = "showPublic";
+        } else if (command.getOption(args,2).toLowerCase() == "chart" || command.getOption(args,2).toLowerCase() == "holdings") {
+            paramInfo.type = "showChart";
         }
         return paramInfo;
     }
@@ -154,6 +172,10 @@ const analyzeParams = (args) => {
         paramInfo.type = "set"
     }
 
+    if(command.getOption(args, 1).toLowerCase() == "defcurrency") {
+        paramInfo.type = "changeCurrency"
+    }
+
     //Goes through the remainder of the arguments after "$wallet X" and assigns a type.
     for (var i = 2; i < args.length; i++){
 
@@ -171,10 +193,13 @@ const analyzeParams = (args) => {
         param = symbolHelper.getSymbol(param);
 
         // Checks if entered data is FIAT. If so, prevent from continuing for now.
-        if (priceHelper.isSupportedFiat(param)) {
-            paramInfo.type = 'fiat-error'
-            paramInfo.error = "Wallet does not support fiat for now. If you'd like this feature, please message the mods!";
-            return paramInfo;
+        if (priceHelper.isSupportedFiat(param))
+        {
+            paramInfo.arguments.push({
+                value: param,
+                type: 'fiat'
+            })
+            continue;
         }
 
         var symbol = symbolHelper.findSymbolOnExchange(param, BASE_ASSET);
