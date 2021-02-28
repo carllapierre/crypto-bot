@@ -67,12 +67,14 @@ exports.add = async (message, parsed) => {
                 }
             } else {
                 message.channel.send(missingWallet());
+                return;
             }
             wallet.save().then(() => {
                 message.channel.send(genericSuccess("Operation add was a success!", "You successfully added " + value + " " + crypto + " to your wallet."));
             });
         } catch (e) {
             message.channel.send(missingWallet());
+            return;
         }
     } else {
         const e = {
@@ -420,6 +422,7 @@ exports.remove = async (message, parsed) => {
             });
         } catch (e) {
             message.channel.send(missingWallet());
+            return;
         }
     } else {
         const e = {
@@ -480,6 +483,7 @@ exports.set = async (message, parsed) => {
                 wallet.holding.set(crypto, value);
             } else {
                 message.channel.send(missingWallet());
+                return;
             }
             wallet.save().then(() => {
                 message.channel.send(genericSuccess("Operation set was a success!", "You successfully set " + crypto + " to " + value + "in your wallet."));
@@ -495,6 +499,7 @@ exports.set = async (message, parsed) => {
             description: "Missing some arguments. Make sure to only have 1 number and 1 symbol."
         }
         message.channel.send(customError(e));
+        return;
     }
 }
 
@@ -541,10 +546,12 @@ exports.changeCurrencyDefault = async (message, parsed) => {
                         description: `Your default currency is already ${fiat}!`
                     }
                     message.channel.send(customWarning(e));
+                    return;
                 }
             }
         } else {
             message.author.send(missingWallet());
+            return;
         }
     } catch (e) {
         message.author.send(handleError(e));
