@@ -8,7 +8,10 @@ exports.run = async (client, message, args) => {
 
     try {
         var parsed = analyzeParams(args)
-
+        console.log(parsed)
+        if(parsed.error){
+            command.alert(message, parsed.error);
+        }
         switch (parsed.type){
             case "help":
                 command.sendHelp(message, portfolioCommand)
@@ -20,25 +23,13 @@ exports.run = async (client, message, args) => {
                 controller.delete(message, parsed);
                 break
             case "add":
-                if (parsed.arguments.length == 0) {
-                    command.sendHelp(message, portfolioCommand)
-                } else {
-                    controller.add(message, parsed)
-                }
+                controller.add(message, parsed)
                 break
             case "remove":
-                if (parsed.arguments.length == 0) {
-                    command.sendHelp(message, portfolioCommand)
-                } else {
-                    controller.remove(message, parsed)
-                }
+                controller.remove(message, parsed)
                 break
             case "set":
-                if (parsed.arguments.length == 0) {
-                    command.sendHelp(message,portfolioCommand)
-                } else {
-                    controller.set(message, parsed)
-                }
+                controller.set(message, parsed)
                 break   
             case "showPublic":
                 controller.showPublic(message, parsed);
@@ -47,10 +38,7 @@ exports.run = async (client, message, args) => {
                 controller.showChart(message, parsed);
                 break
             case "changeCurrency":
-                    controller.changeCurrencyDefault(message, parsed);
-                    break
-            case "fiat-error":
-                command.alert(message, parsed.error);
+                controller.changeCurrencyDefault(message, parsed);
                 break
             default:
                 command.sendHelp(message, portfolioCommand)
@@ -134,13 +122,6 @@ const analyzeParams = (args) => {
         return paramInfo;
     }
 
-    // Looks at first argument after $portfolio, to specify what type of command this will be
-
-    if(command.getOption(args, 1).toLowerCase() == "create") {
-        paramInfo.type = "create"
-        return paramInfo;
-    }
-
     if(command.getOption(args, 1).toLowerCase() == "show") {
         paramInfo.type = "show";
         if (command.getOption(args,2).toLowerCase() == "public") {
@@ -176,60 +157,97 @@ const analyzeParams = (args) => {
     }
 
     //Goes through the remainder of the arguments after "$portfolio X" and assigns a type.
-    for (var i = 2; i < args.length; i++){
+    if(args.length > 2){
+        for (var i = 2; i < args.length; i++){
 
-        var param = command.getOption(args, i)
+            var param = command.getOption(args, i)
 
-        if(!isNaN(param) && param != ""){
-            paramInfo.arguments.push({
-                value: param,
-                type: 'number'
-            })
-            continue
-        }
+            if(!isNaN(param) && param != ""){
+                paramInfo.arguments.push({
+                    value: param,
+                    type: 'number'
+                })
+                continue
+            }
 
-        //goes through a list of aliases and gets correct symbol
-        param = symbolHelper.getSymbol(param);
+            //goes through a list of aliases and gets correct symbol
+            param = symbolHelper.getSymbol(param);
 
-        // Checks if entered data is FIAT. If so, prevent from continuing for now.
-        if (priceHelper.isSupportedFiat(param))
-        {
-            paramInfo.arguments.push({
-                value: param,
-                type: 'fiat'
-            })
-            continue;
-        }
-
-        var symbol = symbolHelper.findSymbolOnExchange(param, BASE_ASSET);
-
-        if(symbol){
-            paramInfo.arguments.push({
-                source: "binance",
-                value: param,
-                type: 'crypto',
-                quoteAsset: symbol.quoteAsset
-            })
-            continue;
-        }else
-        {
-            symbol = symbolHelper.getGeckoInfo(param);
-            if(symbol)
+            // Checks if entered data is FIAT. If so, prevent from continuing for now.
+            if (priceHelper.isSupportedFiat(param))
             {
                 paramInfo.arguments.push({
-                    source: "gecko",
+                    value: param,
+                    type: 'fiat'
+                })
+                continue;
+            }
+
+            var symbol = symbolHelper.findSymbolOnExchange(param, BASE_ASSET);
+
+            if(symbol){
+                paramInfo.arguments.push({
+                    source: "binance",
                     value: param,
                     type: 'crypto',
-                    quoteAsset: 'usd'
+                    quoteAsset: symbol.quoteAsset
                 })
+                continue;
+            }else
+            {
+                symbol = symbolHelper.getGeckoInfo(param);
+                if(symbol)
+                {
+                    paramInfo.arguments.push({
+                        source: "gecko",
+                        value: param,
+                        type: 'crypto',
+                        quoteAsset: 'usd'
+                    })
+                }
             }
-        }
 
-        // If all fails, unknown argument.
-        paramInfo.arguments.push({
-            value: param,
-            type: 'unknown',
-        })
+            // If all fails, unknown argument.
+            paramInfo.arguments.push({
+                value: param,
+                type: 'unknown',
+            })
+        }
     }
+
+    switch (paramInfo.type)
+    {
+        //only 1 arg
+        case "unknown":
+            paramInfo.type = "help";
+            return paramInfo;
+        case "add":
+        case "remove":
+        case "set":
+            if(paramInfo.arguments.length != 2){
+                paramInfo.error = `It seems you haven't provided the correct arguments. Type "$portfolio help" for usage info.`    
+                return paramInfo  
+            }
+
+            if(paramInfo.arguments[0].type == "number" && (paramInfo.arguments[1].type == "crypto" || (paramInfo.arguments[1].type == "fiat" && paramInfo.arguments[1].value == "USDT"))) 
+                return paramInfo;
+            else{
+                paramInfo.error = `It seems you haven't provided the correct arguments. Type "$portfolio help" for usage info.`   
+                return paramInfo;
+            }
+        case "changeCurrency":
+            if(paramInfo.arguments.length != 1){
+                paramInfo.error = `It seems you haven't provided the correct arguments. Type "$portfolio help" for usage info.`    
+                return paramInfo
+            }
+
+            if(paramInfo.arguments[0].type == "fiat") //can't do $coin cad since api don't give that info
+                return paramInfo
+            else {
+                paramInfo.error = `Unfortunately, you can only set FIAT currency as a default.` 
+                return paramInfo;
+            }
+    }
+
     return paramInfo;
 }

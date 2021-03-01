@@ -14,6 +14,11 @@ exports.getSymbol = (arg) => {
 }
 
 exports.getTickerInfo = (symbol) => {
+    if(symbol.toLowerCase() == "usdtusdt")
+    {
+        return { lastPrice: 1}
+    }
+
     var res= request('GET',`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`)
     var json = JSON.parse(res.getBody('utf8'))
 

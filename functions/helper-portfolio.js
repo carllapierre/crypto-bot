@@ -5,95 +5,6 @@ const Discord = require('discord.js')
 const helper = require('./helper-color.js');
 const QuickChart = require('quickchart-js');
 const command = require('./helper-command')
-exports.add = async (message, parsed) => {
-
-    let valueFound = false;
-    let cryptoFound = false;
-    let value = 0;
-    let crypto = '';
-
-    for (var i = 0; i < parsed.arguments.length; i++) {
-        var a = parsed.arguments[i];
-        if (a.type == 'number') {
-            if (valueFound) {
-                const e = {
-                    name: "Values",
-                    code: 69,
-                    description: "Too many values were sent to the command"
-                }
-                message.channel.send(customError(e));
-                return;
-            } else {
-                valueFound = true;
-                value = a.value; 
-            }
-        }
-        if (a.type == 'crypto') {
-            if (cryptoFound) {
-                const e = {
-                    name: "Crypto Symbols",
-                    code: 69,
-                    description: "Too many crypto symbols were sent to the command"
-                }
-                message.channel.send(customError(e));
-                return;
-            } else {
-                cryptoFound = true;
-                crypto = a.value;
-            }
-        }
-
-        if (a.type == 'fiat') {
-            const e = {
-                name: "Fiat",
-                code: 69,
-                description: "Sorry, you currently can't add fiat to your portfolio."
-            }
-            message.channel.send(customError(e));
-            return;
-        }
-    }
-
-    if (valueFound && cryptoFound) {
-        try {
-
-            const wallet = await getOrCreatePortfolio(message.author.id);
-            
-            if (wallet.holding.has(crypto)) {
-                wallet.holding.set(crypto, Number(value) + Number(wallet.holding.get(crypto)));
-            } else {
-                wallet.holding.set(crypto, value);
-            }
-
-            wallet.save().then(() => {
-                message.channel.send(command.showSuccess("Operation add was a success!", "You successfully added " + value + " " + crypto + " to your portfolio."));
-            });
-        } catch (e) {
-            return;
-        }
-    } else {
-        const e = {
-            name: "Missing info!",
-            code: 69,
-            description: "Missing some arguments. Make sure to only have 1 number and 1 symbol."
-        }
-        message.channel.send(customError(e));
-    }
-    
-}
-
-async function getOrCreatePortfolio(id) {
-
-    let wallet = await Wallet.get(id);
-    if(wallet)
-        return wallet
-
-    wallet = new Wallet();
-    wallet.userID = id;
-    wallet.holding = new Map();
-    
-    return await wallet.save()
-}
 
 exports.show = async (message) => {
     const wallet = await getOrCreatePortfolio(message.author.id);
@@ -118,7 +29,6 @@ exports.delete = async (message) => {
         message.channel.send(embed);
     });
 }
-
 
 const customError = (e) => {
     let embed = new Discord.RichEmbed();
@@ -212,7 +122,8 @@ const getWalletChartEmbed = async (wallet) => {
         var colorInt = 0;
 
         for (let [key, value] of wallet.holding) {
-            var response = await symbolHelper.getTickerInfo(key + 'USDT');
+
+            var response = await symbolHelper.getTickerInfo(key + 'USDT');        
             var cryptoPrice = response.lastPrice;
 
             label.push(key);
@@ -317,192 +228,100 @@ function getDefinedColor(x) {
     return colorChoices[x];
 }
 
-exports.remove = async (message, parsed) => {
+async function getOrCreatePortfolio(id) {
 
-    let valueFound = false;
-    let cryptoFound = false;
-    let value = 0;
-    let crypto = '';
+    let wallet = await Wallet.get(id);
+    if(wallet)
+        return wallet
 
-    for (var i = 0; i < parsed.arguments.length; i++) {
-        var a = parsed.arguments[i];
-        if (a.type == 'number') {
-            if (valueFound) {
-                const e = {
-                    name: "Values",
-                    code: 69,
-                    description: "Too many values were sent to the command"
-                }
-                message.channel.send(customError(e));
-                return;
-            } else {
-                valueFound = true;
-                value = a.value; 
-            }
-        }
-        if (a.type == 'crypto') {
-            if (cryptoFound) {
-                const e = {
-                    name: "Crypto Symbols",
-                    code: 69,
-                    description: "Too many crypto symbols were sent to the command"
-                }
-                message.channel.send(customError(e));
-                return;
-            } else {
-                cryptoFound = true;
-                crypto = a.value;
-            }
-        }
-    }
-
-    if (valueFound && cryptoFound) {
-        try {
-
-            const wallet =  await getOrCreatePortfolio(message.author.id);
-        
-            if (wallet.holding.has(crypto)) {
-                wallet.holding.set(crypto, Number(wallet.holding.get(crypto)) - Number(value));
-                if (Number(wallet.holding.get(crypto)) <= 0) {
-                    wallet.holding.delete(crypto);
-                }
-            } else {
-                const e = {
-                    name: "You don't have this crypto",
-                    code: 69,
-                    description: "Cannot remove crypto you don't have!"
-                }
-                message.channel.send(customError(e));
-                return;
-            }
-
-            wallet.save().then(() => {
-                message.channel.send(command.showSuccess("Operation remove was a success!", "You successfully removed " + value + " " + crypto + " from your portfolio."));
-            });
-        } catch (e) {
-            return;
-        }
-    } else {
-        const e = {
-            name: "Missing info!",
-            code: 69,
-            description: "Missing some arguments. Make sure to only have 1 number and 1 symbol."
-        }
-        message.channel.send(customError(e));
-    }
+    wallet = new Wallet();
+    wallet.userID = id;
+    wallet.holding = new Map();
     
+    return await wallet.save()
 }
 
-exports.set = async (message, parsed) => {
 
-    let valueFound = false;
-    let cryptoFound = false;
-    let value = 0;
-    let crypto = '';
+exports.remove = async (message, parsed) => {
 
-    for (var i = 0; i < parsed.arguments.length; i++) {
-        var a = parsed.arguments[i];
-        if (a.type == 'number') {
-            if (valueFound) {
-                const e = {
-                    name: "Values",
-                    code: 69,
-                    description: "Too many values were sent to the command"
-                }
-                message.channel.send(customError(e));
-                return;
-            } else {
-                valueFound = true;
-                value = a.value; 
-            }
-        }
-        if (a.type == 'crypto') {
-            if (cryptoFound) {
-                const e = {
-                    name: "Crypto Symbols",
-                    code: 69,
-                    description: "Too many crypto symbols were sent to the command"
-                }
-                message.channel.send(customError(e));
-                return;
-            } else {
-                cryptoFound = true;
-                crypto = a.value;
-            }
-        }
-    }
+    let value = parsed.arguments[0].value;
+    let crypto = parsed.arguments[1].value;
+   
+    const wallet =  await getOrCreatePortfolio(message.author.id);
 
-    if (valueFound && cryptoFound) {
-        try {
-
-            const wallet =  await getOrCreatePortfolio(message.author.id);
-  
-            wallet.holding.set(crypto, value);
-
-            wallet.save().then(() => {
-                message.channel.send(command.showSuccess("Operation set was a success!", "You successfully set " + crypto + " to " + value + " in your portfolio."));
-            });
-        } catch (e) {
-            console.log(e)
-            return;
+    if (wallet.holding.has(crypto)) {
+        wallet.holding.set(crypto, Number(wallet.holding.get(crypto)) - Number(value));
+        if (Number(wallet.holding.get(crypto)) <= 0) {
+            wallet.holding.delete(crypto);
         }
     } else {
         const e = {
-            name: "Missing info!",
+            name: "You don't have this crypto",
             code: 69,
-            description: "Missing some arguments. Make sure to only have 1 number and 1 symbol."
+            description: "Cannot remove crypto you don't have!"
         }
         message.channel.send(customError(e));
         return;
     }
+
+    wallet.save().then(() => {
+        message.channel.send(command.showSuccess("Operation remove was a success!", "You successfully removed " + value + " " + crypto + " from your portfolio."));
+    });  
+}
+
+exports.add = async (message, parsed) => {
+
+    let value = parsed.arguments[0].value;
+    let crypto = parsed.arguments[1].value;
+
+    const wallet = await getOrCreatePortfolio(message.author.id);
+    
+    if (wallet.holding.has(crypto)) {
+        wallet.holding.set(crypto, Number(value) + Number(wallet.holding.get(crypto)));
+    } else {
+        
+        wallet.holding.set(crypto, value);
+    }
+
+    wallet.save().then(() => {
+        message.channel.send(command.showSuccess("Operation add was a success!", "You successfully added " + value + " " + crypto + " to your portfolio."));
+    });
+    
+}
+
+exports.set = async (message, parsed) => {
+    
+    let value = parsed.arguments[0].value;
+    let crypto = parsed.arguments[1].value;
+
+    const wallet =  await getOrCreatePortfolio(message.author.id);
+
+    wallet.holding.set(crypto, value);
+    wallet.save().then(() => {
+        message.channel.send(command.showSuccess("Operation set was a success!", "You successfully set " + crypto + " to " + value + " in your portfolio."));
+    });
+
 }
 
 exports.changeCurrencyDefault = async (message, parsed) => {
 
-    try {
+    const wallet =  await getOrCreatePortfolio(message.author.id);
 
-        const wallet =  await getOrCreatePortfolio(message.author.id);
+    var fiat = parsed.arguments[0].value;
 
-        var fiatFound = false;
-        var fiat = '';
-
-        for (var i = 0; i < parsed.arguments.length; i++) {
-            var a = parsed.arguments[i];
-            if (a.type == 'fiat') {
-                if (!fiatFound) {
-                    fiat = a.value;
-                    fiatFound = true;
-                } else {
-                    const e = {
-                        name: "Fiat",
-                        code: 69,
-                        description: "Too many fiat were sent to the command"
-                    }
-                    message.channel.send(customError(e));
-                    return;
-                }
-            }
+    oldCurrency = wallet.preferences.currency;
+    if (oldCurrency !== fiat) {
+        wallet.preferences.currency = fiat;
+        wallet.save().then(() => {
+        message.channel.send(command.showSuccess("Operation add was a success!", `You changed your default currency from ${oldCurrency} to ${fiat}`));
+    })
+    } else {
+        const e = {
+            name: "Default already set",
+            code: 69,
+            description: `Your default currency is already ${fiat}!`
         }
-        
-        if (fiatFound) {
-            oldCurrency = wallet.preferences.currency;
-            if (oldCurrency !== fiat) {
-                wallet.preferences.currency = fiat;
-                wallet.save().then(() => {
-                message.channel.send(command.showSuccess("Operation add was a success!", `You changed your default currency from ${oldCurrency} to ${fiat}`));
-            })
-            } else {
-                const e = {
-                    name: "Default already set",
-                    code: 69,
-                    description: `Your default currency is already ${fiat}!`
-                }
-                message.channel.send(customWarning(e));
-                return;
-            }
-        }
-
-    } catch (e) {
-        message.author.send(handleError(e));
-    }
+        message.channel.send(customWarning(e));
+        return;
+    }   
 }
