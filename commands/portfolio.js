@@ -1,66 +1,67 @@
 const command      = require('../functions/helper-command')
 const priceHelper = require('../functions/helper-price')
 const symbolHelper = require('../functions/helper-symbol')
-const controller = require('../functions/helper-wallet')
+const controller = require('../functions/helper-portfolio')
 const BASE_ASSET    = "USDT"
 
 exports.run = async (client, message, args) => {
 
-    var parsed = analyzeParams(args)
+    try {
+        var parsed = analyzeParams(args)
 
-    switch (parsed.type){
-        case "help":
-            command.sendHelp(message, walletCommand)
-            break
-        case "create":
-            controller.create(message, parsed);
-            break
-        case "show":
-            controller.show(message, parsed);
-            break
-        case "delete":
-            controller.delete(message, parsed);
-            break
-        case "add":
-            if (parsed.arguments.length == 0) {
-                command.sendHelp(message, walletCommand)
-            } else {
-                controller.add(message, parsed)
-            }
-            break
-        case "remove":
-            if (parsed.arguments.length == 0) {
-                command.sendHelp(message, walletCommand)
-            } else {
-                controller.remove(message, parsed)
-            }
-            break
-        case "set":
-            if (parsed.arguments.length == 0) {
-                command.sendHelp(message, walletCommand)
-            } else {
-                controller.set(message, parsed)
-            }
-            break   
-        case "showPublic":
-            controller.showPublic(message, parsed);
-            break
-        case "showChart":
-            controller.showChart(message, parsed);
-            break
-        case "changeCurrency":
-                controller.changeCurrencyDefault(message, parsed);
+        switch (parsed.type){
+            case "help":
+                command.sendHelp(message, portfolioCommand)
                 break
-        case "fiat-error":
-            command.alert(message, parsed.error);
-            break
-        default:
-            command.sendHelp(message, walletCommand)
+            case "show":
+                controller.show(message, parsed);
+                break
+            case "delete":
+                controller.delete(message, parsed);
+                break
+            case "add":
+                if (parsed.arguments.length == 0) {
+                    command.sendHelp(message, portfolioCommand)
+                } else {
+                    controller.add(message, parsed)
+                }
+                break
+            case "remove":
+                if (parsed.arguments.length == 0) {
+                    command.sendHelp(message, portfolioCommand)
+                } else {
+                    controller.remove(message, parsed)
+                }
+                break
+            case "set":
+                if (parsed.arguments.length == 0) {
+                    command.sendHelp(message,portfolioCommand)
+                } else {
+                    controller.set(message, parsed)
+                }
+                break   
+            case "showPublic":
+                controller.showPublic(message, parsed);
+                break
+            case "showChart":
+                controller.showChart(message, parsed);
+                break
+            case "changeCurrency":
+                    controller.changeCurrencyDefault(message, parsed);
+                    break
+            case "fiat-error":
+                command.alert(message, parsed.error);
+                break
+            default:
+                command.sendHelp(message, portfolioCommand)
+        }
+    } catch (e) {
+        message.author.send(command.handleError(e));
     }
 }
 
-let walletCommand = {
-    commandName: 'wallet',
+let portfolioCommand = {
+    commandName: 'portfolio',
     optPrefix: '',
     options: [
     {
@@ -69,18 +70,13 @@ let walletCommand = {
         params: '',
     },
     {
-        aliases: ['create'],
-        description: "Will create a new wallet with your Discord ID. You can direct message the bot as well.",
-        params: '',
-    },
-    {
         aliases: ['show'],
-        description: "Will send you a private message with your wallet's content. You can direct message the bot as well.",
+        description: "Will send you a private message with your portfolio's content. You can direct message the bot as well.",
         params: '',
     },
     {
         aliases: ['show public'],
-        description: "Will post your wallet to the channel where command was entered, for the whole world to see!",
+        description: "Will post your portfolio to the channel where command was entered, for the whole world to see!",
         params: '',
     },
     {
@@ -90,27 +86,27 @@ let walletCommand = {
     },
     {
         aliases: ['delete'],
-        description: "Will delete your wallet from our database. You can direct message the bot as well.",
+        description: "Will delete your portfolio from our database. You can direct message the bot as well.",
         params: '',
     },
     {
         aliases: ['defcurrency <fiat currency>'],
-        description: "Change your wallet's default currency for reporting.",
+        description: "Change your portfolio's default currency for reporting.",
         params: '',
     },
     {
         aliases: ['add <quantity> <cryptocurrency>'],
-        description: "Add the specified quantity to your wallet. You can direct message the bot as well.",
+        description: "Add the specified quantity to your portfolio. You can direct message the bot as well.",
         params: '',
     },
     {
         aliases: ['remove <quantity> <cryptocurrency>'],
-        description: "Subtract the specified quantity from your wallet. (Cannot go negative). You can direct message the bot as well.",
+        description: "Subtract the specified quantity from your portfolio. (Cannot go negative). You can direct message the bot as well.",
         params: '',
     },
     {
         aliases: ['set <quantity> <cryptocurrency>'],
-        description: "Set the crypto in your wallet to a specified quantity. You can direct message the bot as well.",
+        description: "Set the crypto in your portfolio to a specified quantity. You can direct message the bot as well.",
         params: '',
     },
     ]
@@ -120,7 +116,7 @@ let walletCommand = {
 //Will analyze parameters and give information on the data provided
 //Different types available
 //1. 'help': will trigger help function
-//2. 'create': will create a wallet in the DB for the user
+//2. 'create': will create a portfolio in the DB for the user
 //3. 'Add': Will add specified crypto qty
 //4. 'Remove': Will remove specified crypto qty
 
@@ -138,7 +134,7 @@ const analyzeParams = (args) => {
         return paramInfo;
     }
 
-    // Looks at first argument after $wallet, to specify what type of command this will be
+    // Looks at first argument after $portfolio, to specify what type of command this will be
 
     if(command.getOption(args, 1).toLowerCase() == "create") {
         paramInfo.type = "create"
@@ -179,7 +175,7 @@ const analyzeParams = (args) => {
         paramInfo.type = "changeCurrency"
     }
 
-    //Goes through the remainder of the arguments after "$wallet X" and assigns a type.
+    //Goes through the remainder of the arguments after "$portfolio X" and assigns a type.
     for (var i = 2; i < args.length; i++){
 
         var param = command.getOption(args, i)

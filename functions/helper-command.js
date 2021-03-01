@@ -22,6 +22,15 @@ exports.alert = (message, msg) => {
     embed.setDescription(`:rotating_light: ${msg}`);      
     message.channel.send(embed);   
 }
+exports.alertPool = (message) => {
+    let embed = new Discord.RichEmbed()
+    embed.setColor("BLUE");
+    embed.setDescription(`Hey you! Yeah you! Do you have some ADA laying around? Did you know you can stake your ADA without locking it? It won't cost you anything and you will get rewarded by doing so! If you're interested, Crypto Canada is running its very own high availability pool managed by IT professionals and DeFi enthusiasts! Check out the following links for more information. Stake Pool: [[CADA]](https://cadapool.com/) More Info on Staking: [Cardano Website](https://cardano.org/calculator/?calculator=delegator)`);
+    embed.attachFile(`./content/coin-images/ada.png`)
+    embed.setAuthor(`[CADA] Stake Pool`, `attachment://ada.png`)
+    embed.setFooter(`Powered by Canada Crypto!`)
+    message.channel.send(embed);   
+}
 
 exports.sendHelp = (message, commandObj) => {
     let embed = new Discord.RichEmbed()
@@ -139,6 +148,38 @@ exports.alertTrendingCoins = (message, json) => {
     message.channel.send(embed);   
 }
 
+exports.handleError = (error) => {
+
+    let embed = new Discord.RichEmbed();
+    embed.setFooter(`Powered by Crypto Canada!`);
+    embed.setColor('#FF0000');
+
+    if (error.name === 'MongoError' && error.code === 11000) {
+        embed.setTitle('Duplicate user')
+        embed.addField("User already in database", "Wallet already exists.");
+        return embed
+    } else {
+        embed.setTitle(error.code)
+        embed.addField("Error code: " + error.code, "Sorry, an error has occured.");
+        return embed
+    }
+
+};
+
+exports.showSuccess = (title, message) => {
+
+    const embed = new Discord.RichEmbed()
+
+    embed.setColor("GREEN");
+    embed.setTitle('Success!');
+    embed.addField(title, message);
+    embed.setFooter(`Powered by Crypto Canada!`);
+
+    return embed;
+}
+
+
+
 exports.alertCandidates = (message, results) => {
     let embed = new Discord.RichEmbed()
 
@@ -178,3 +219,4 @@ const iconExists = (symbol) => {
     console.error(err)
     }
 }
+
