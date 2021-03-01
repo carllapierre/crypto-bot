@@ -37,12 +37,6 @@ exports.getTickerInfoZap = () => {
 exports.findSymbolOnExchange = (symbol, baseAsset) => {
     var exInfo = getExchangeInfo()
 
-    if(symbol.toLowerCase() == "zap")
-        return {
-            symbol: symbol,
-            quoteAsset: baseAsset
-        } 
-
     //prioritize base asset
     var coin = exInfo.symbols.find(x=>x.status == 'TRADING' && x.baseAsset == symbol && x.quoteAsset == baseAsset)
     if(!coin){
@@ -55,16 +49,20 @@ exports.findSymbolOnExchange = (symbol, baseAsset) => {
         } 
 }
 
-exports.getGeckoDetails = (id) => {
+exports.getGeckoInfo = (id) => {
 
-    var res= request('GET',`https://api.coingecko.com/api/v3/coins/${id.toLowerCase()}/market_chart?vs_currency=usd&days=1&interval=daily`)
+    var res= request('GET',`https://api.coingecko.com/api/v3/simple/price?ids=${id.toLowerCase()}&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true`)
     var json = JSON.parse(res.getBody('utf8'))
-
+    
+    if(!json[id.toLowerCase()])
+        return;
     return {
-        price: json.prices[1][1],
-        volpercent: ((json.market_caps[1][1] - json.market_caps[0][1]) / json.market_caps[0][1] * 100),
-        marketcap: json.market_caps[1][1]
-    }
+        lastPrice: `${json[id.toLowerCase()].usd}`,
+        highPrice:"N/A",
+        lowPrice:"N/A",
+        priceChangePercent: json[id.toLowerCase()].usd_24h_change,
+        volume: `${json[id.toLowerCase()].usd_24h_vol}`
+    };
 }
 
 const getExchangeInfo = () =>{
@@ -88,6 +86,14 @@ const mapper = {
     {
         symbol: "BTC",
         aliases: ["btc", "bitcoin", "bit"]
+    },
+    {
+        symbol: "SPARK",
+        aliases: ["FLR"]
+    },
+    {
+        symbol: "SAFE-HAVEN",
+        aliases: ["SHA"]
     }]
 }
 

@@ -8,6 +8,7 @@ const BASE_ASSET    = "USDT"
 
 exports.run = async (client, message, args) => {
     var parsed = analyzeParams(args)
+
     switch (parsed.type){
         case "help":
             handleHelp(message)
@@ -40,9 +41,10 @@ const handleDefault = (message, parsed) => {
 }
 const handleInfo = (message, parsed) => {
     var tickerInfo;
-    if(parsed.arguments[0].value.toLowerCase() == "zap")
+
+    if(parsed.arguments[0].source.toLowerCase() == "gecko")
     {
-        tickerInfo = symbolHelper.getTickerInfoZap()
+        tickerInfo = symbolHelper.getGeckoInfo(parsed.arguments[0].value)
         command.alertCoin(message, tickerInfo, parsed.arguments[0].value, parsed.arguments[0].quoteAsset)   
         return;
     }
@@ -149,13 +151,28 @@ const analyzeParams = (args) => {
 
         //TODO Check if crypto is available to trade on the binance exchange, also, note the if it can trade with usdt or btc
         var symbol = symbolHelper.findSymbolOnExchange(param, BASE_ASSET);
+
         if(symbol){
             paramInfo.arguments.push({
+                source: "binance",
                 value: param,
                 type: 'crypto',
                 quoteAsset: symbol.quoteAsset
             })
             continue;
+        }else
+        {
+            symbol = symbolHelper.getGeckoInfo(param);
+            if(symbol)
+            {
+                paramInfo.arguments.push({
+                    source: "gecko",
+                    value: param,
+                    type: 'crypto',
+                    quoteAsset: 'USDT'
+                })
+                continue;
+            }
         }
 
         paramInfo.arguments.push({

@@ -205,11 +205,24 @@ const analyzeParams = (args) => {
 
         if(symbol){
             paramInfo.arguments.push({
+                source: "binance",
                 value: param,
                 type: 'crypto',
                 quoteAsset: symbol.quoteAsset
             })
             continue;
+        }else
+        {
+            symbol = symbolHelper.getGeckoInfo(param);
+            if(symbol)
+            {
+                paramInfo.arguments.push({
+                    source: "gecko",
+                    value: param,
+                    type: 'crypto',
+                    quoteAsset: 'usd'
+                })
+            }
         }
 
         // If all fails, unknown argument.
