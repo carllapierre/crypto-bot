@@ -205,9 +205,11 @@ const getWalletChartEmbed = async (wallet) => {
 
         var data = [];
         var label = [];
+        var bgColor = [];
         var totalValue = 0;
         var biggestValue = 0;
         var biggestCrypto = "";
+        var colorInt = 0;
 
         for (let [key, value] of wallet.holding) {
             var response = await symbolHelper.getTickerInfo(key + 'USDT');
@@ -215,6 +217,11 @@ const getWalletChartEmbed = async (wallet) => {
 
             label.push(key);
             data.push(value * cryptoPrice);
+            bgColor.push(getDefinedColor(colorInt))
+            colorInt++;
+            if (colorInt > 9) {
+                colorInt == 0;
+            }
             if (value*cryptoPrice > biggestValue) {
                 biggestValue = value*cryptoPrice;
                 biggestCrypto = key;
@@ -229,28 +236,42 @@ const getWalletChartEmbed = async (wallet) => {
         biggestValue = Number.parseFloat(biggestValue*100/totalValue).toFixed(2);
 
         chart.setConfig({
-            type: 'pie',
+            type: 'outlabeledPie',
             data : {
-                datasets: [{data: data}],
+                datasets: [{data: data, backgroundColor: bgColor}],
                 labels: label,
             },
             options: {
                 legend: {
                     labels: {
-                        fontSize: 20,
+                        fontSize: 300,
                     }
                 },
                 plugins: {
-                    datalabels: {
-                        color: '#000',
-                        formatter: (value) => {
-                            return value + ' %'
-                        },
-                        align: 'center',
-                        font: {
-                            size: 20,
+                    // datalabels: {
+                    //     color: '#000',
+                    //     formatter: (value) => {
+                    //         return value + ' %'
+                    //     },
+                    //     align: 'center',
+                    //     font: {
+                    //         size: 20,
+                    //     }
+                    // },
+                    borderRadius: 17,
+                    borderWidth: 2,
+                    padding: 3,
+                    "legend": false,
+                    "outlabels": {
+                        "text": "%l (%p)",
+                        "color": "black",
+                        "stretch": 35,
+                        "font": {
+                          "resizable": true,
+                          "minSize": 16,
+                          "maxSize": 20
                         }
-                    }
+                      }
                 },
                 legend: {
                     labels: {
@@ -258,7 +279,7 @@ const getWalletChartEmbed = async (wallet) => {
                     }
                 }
             }
-        }).setWidth(600).setHeight(600).setBackgroundColor('transparent');
+        }).setWidth(500).setHeight(500).setBackgroundColor('transparent');
         
         embed.setImage(chart.getUrl());
         embed.addField("Your biggest contributor", `Your ${biggestCrypto} is your largest holding, representing ${biggestValue}% of your portfolio!`);
@@ -269,6 +290,31 @@ const getWalletChartEmbed = async (wallet) => {
 
     return embed;
 
+}
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function getDefinedColor(x) {
+    const colorChoices = [
+        '#78bf7d',
+        '#78bfb4',
+        '#7883bf',
+        '#b178bf',
+        '#bf787f',
+        '#bfae78',
+        '#dbdb23',
+        '#0cad95',
+        '#6f59ff',
+        '#cdccd9',
+    ]
+    return colorChoices[x];
 }
 
 exports.remove = async (message, parsed) => {
