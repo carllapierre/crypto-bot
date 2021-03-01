@@ -257,6 +257,9 @@ const getWalletChartEmbed = async (wallet) => {
         
         embed.setImage(chart.getUrl());
         embed.addField("Your biggest contributor", `Your ${biggestCrypto} is your largest holding, representing ${biggestValue}% of your portfolio!`);
+    } else {
+        embed.addField("No coins?", "Add some coins to your portfolio! Try $portfolio help for more details.");
+        return embed;
     }
 
     return embed;
