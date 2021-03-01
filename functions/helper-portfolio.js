@@ -235,6 +235,11 @@ const getWalletChartEmbed = async (wallet) => {
                 labels: label,
             },
             options: {
+                legend: {
+                    labels: {
+                        fontSize: 10,
+                    }
+                },
                 plugins: {
                     datalabels: {
                         color: '#000',
@@ -253,7 +258,7 @@ const getWalletChartEmbed = async (wallet) => {
                     }
                 }
             }
-        }).setWidth(200).setHeight(200).setBackgroundColor('transparent');
+        }).setWidth(400).setHeight(200).setBackgroundColor('transparent');
         
         embed.setImage(chart.getUrl());
         embed.addField("Your biggest contributor", `Your ${biggestCrypto} is your largest holding, representing ${biggestValue}% of your portfolio!`);
