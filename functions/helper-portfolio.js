@@ -237,7 +237,7 @@ const getWalletChartEmbed = async (wallet) => {
             options: {
                 legend: {
                     labels: {
-                        fontSize: 12,
+                        fontSize: 20,
                     }
                 },
                 plugins: {
@@ -248,7 +248,7 @@ const getWalletChartEmbed = async (wallet) => {
                         },
                         align: 'center',
                         font: {
-                            size: 12,
+                            size: 20,
                         }
                     }
                 },
