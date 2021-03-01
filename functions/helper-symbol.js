@@ -99,6 +99,10 @@ const mapper = {
     {
         symbol: "SAFE-HAVEN",
         aliases: ["SHA"]
+    },
+    {
+        symbol: "CASINOCOIN",
+        aliases: ["CSC"]
     }]
 }
 
