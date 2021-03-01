@@ -248,7 +248,7 @@ const getWalletChartEmbed = async (wallet) => {
                         },
                         align: 'center',
                         font: {
-                            size: 9,
+                            size: 10,
                         }
                     }
                 },
@@ -258,7 +258,7 @@ const getWalletChartEmbed = async (wallet) => {
                     }
                 }
             }
-        }).setWidth(400).setHeight(200).setBackgroundColor('transparent');
+        }).setWidth(600).setHeight(600).setBackgroundColor('transparent');
         
         embed.setImage(chart.getUrl());
         embed.addField("Your biggest contributor", `Your ${biggestCrypto} is your largest holding, representing ${biggestValue}% of your portfolio!`);
