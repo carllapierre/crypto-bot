@@ -148,6 +148,38 @@ exports.alertTrendingCoins = (message, json) => {
     message.channel.send(embed);   
 }
 
+exports.handleError = (error) => {
+
+    let embed = new Discord.RichEmbed();
+    embed.setFooter(`Powered by Crypto Canada!`);
+    embed.setColor('#FF0000');
+
+    if (error.name === 'MongoError' && error.code === 11000) {
+        embed.setTitle('Duplicate user')
+        embed.addField("User already in database", "Wallet already exists.");
+        return embed
+    } else {
+        embed.setTitle(error.code)
+        embed.addField("Error code: " + error.code, "Sorry, an error has occured.");
+        return embed
+    }
+
+};
+
+exports.showSuccess = (title, message) => {
+
+    const embed = new Discord.RichEmbed()
+
+    embed.setColor("GREEN");
+    embed.setTitle('Success!');
+    embed.addField(title, message);
+    embed.setFooter(`Powered by Crypto Canada!`);
+
+    return embed;
+}
+
+
+
 exports.alertCandidates = (message, results) => {
     let embed = new Discord.RichEmbed()
 
@@ -187,3 +219,4 @@ const iconExists = (symbol) => {
     console.error(err)
     }
 }
+

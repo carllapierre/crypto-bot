@@ -1,9 +1,13 @@
 require('dotenv').config()
 const Discord = require('discord.js')
+const mongoose = require('./config/mongoose');
 const fs = require('fs')
 
 // Create a Discord.Client() instance.
 const client = new Discord.Client()
+
+// open mongoose connection
+mongoose.connect();
 
 // Load all commands into the client's commands object from the /commands/ folder.
 client.commands = {}
