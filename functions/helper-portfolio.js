@@ -206,6 +206,7 @@ function sortDecreasingValue(nameArray, valueArray) {
                 valueArray[j] = tempValue;
                 nameArray[j] = tempName;
                 i = 0;
+                break;
             }
         }
     }
