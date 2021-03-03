@@ -131,7 +131,7 @@ const getWalletChartEmbed = async (wallet) => {
             bgColor.push(getDefinedColor(colorInt))
             colorInt++;
             if (colorInt > 9) {
-                colorInt == 0;
+                colorInt = 0;
             }
             if (value*cryptoPrice > biggestValue) {
                 biggestValue = value*cryptoPrice;
