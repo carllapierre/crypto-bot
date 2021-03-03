@@ -153,11 +153,12 @@ const getWalletChartEmbed = async (wallet) => {
                 labels: label,
             },
             options: {
-                legend: {
-                    labels: {
-                        fontSize: 300,
-                    }
-                },
+                // legend: {
+                //     labels: {
+                //         fontSize: 300,
+                //     }
+                // },
+                rotation: Math.PI,
                 plugins: {
                     // datalabels: {
                     //     color: '#000',
@@ -176,12 +177,13 @@ const getWalletChartEmbed = async (wallet) => {
                     "outlabels": {
                         "text": "%l (%p)",
                         "color": "black",
-                        "stretch": 35,
+                        "stretch": 55,
                         "font": {
                           "resizable": true,
                           "minSize": 16,
                           "maxSize": 20
-                        }
+                        }, 
+
                       }
                 },
                 legend: {
