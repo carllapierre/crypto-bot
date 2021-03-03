@@ -139,6 +139,8 @@ const getWalletChartEmbed = async (wallet) => {
             }
             totalValue += value * cryptoPrice;
         }
+
+        [label, data] = sortDecreasingValue(label, data);
         
         for (var i = 0; i < data.length; i++) {
             data[i] = Number.parseFloat(data[i]*100/totalValue).toFixed(2);
@@ -153,26 +155,12 @@ const getWalletChartEmbed = async (wallet) => {
                 labels: label,
             },
             options: {
-                // legend: {
-                //     labels: {
-                //         fontSize: 300,
-                //     }
-                // },
                 rotation: Math.PI,
                 plugins: {
-                    // datalabels: {
-                    //     color: '#000',
-                    //     formatter: (value) => {
-                    //         return value + ' %'
-                    //     },
-                    //     align: 'center',
-                    //     font: {
-                    //         size: 20,
-                    //     }
-                    // },
                     borderRadius: 17,
                     borderWidth: 2,
                     padding: 3,
+                    
                     "legend": false,
                     "outlabels": {
                         "text": "%l (%p)",
@@ -192,7 +180,7 @@ const getWalletChartEmbed = async (wallet) => {
                     }
                 }
             }
-        }).setWidth(500).setHeight(500).setBackgroundColor('transparent');
+        }).setWidth(700).setHeight(500).setBackgroundColor('transparent');
         
         embed.setImage(chart.getUrl());
         embed.addField("Your biggest contributor", `Your ${biggestCrypto} is your largest holding, representing ${biggestValue}% of your portfolio!`);
@@ -205,13 +193,23 @@ const getWalletChartEmbed = async (wallet) => {
 
 }
 
-function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
+function sortDecreasingValue(nameArray, valueArray) {
+    for (var i=0; i < valueArray.length;i++) {
+        firstValue = valueArray[i];
+        for (var j = i+1; j < valueArray.length; j++) {
+            secondValue = valueArray[j];
+            if (firstValue < secondValue) {
+                var tempValue = firstValue;
+                var tempName = nameArray[i];
+                valueArray[i] = secondValue;
+                nameArray[i] = nameArray[j];
+                valueArray[j] = tempValue;
+                nameArray[j] = tempName;
+                i = 0;
+            }
+        }
     }
-    return color;
+    return [nameArray, valueArray]
 }
 
 function getDefinedColor(x) {
