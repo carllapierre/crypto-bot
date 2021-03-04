@@ -115,6 +115,7 @@ const embedStock = (stock) => {
     embed.addField("Volume:", stock.volume, true);
     embed.addField("Type:", stock.type, true);
     embed.addField("Symbol:", stock.symbol, true);
+    embed.addField("Last update:", stock.latestTradingDay, true);
 
     return embed;
 
