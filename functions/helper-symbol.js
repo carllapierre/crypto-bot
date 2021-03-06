@@ -44,9 +44,11 @@ exports.getTickerInfo = (symbol) => {
 
 exports.findSymbolOnExchange = (symbol, baseAsset) => {
     var exInfo = getExchangeInfo()
+    
 
     //prioritize base asset
     var coin = exInfo.symbols.find(x=>x.status == 'TRADING' && x.baseAsset == symbol && x.quoteAsset == baseAsset)
+    console.log(baseAsset)
     if(!coin){
         coin = exInfo.symbols.find(x=>x.status == 'TRADING' && x.baseAsset == symbol)
     }
@@ -100,12 +102,12 @@ const mapper = {
         aliases: ["FLR"]
     },
     {
-        symbol: "SAFE-HAVEN",
+        symbol: "SHA",
         aliases: ["SHA"]
     },
     {
-        symbol: "CASINOCOIN",
-        aliases: ["CSC"]
+        symbol: "CSC",
+        aliases: ["CASINOCOIN"]
     }]
 }
 
