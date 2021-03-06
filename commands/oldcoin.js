@@ -1,20 +1,14 @@
 const command = require('../functions/helper-command')
 const symbolHelper = require('../functions/helper-symbol')
 const priceHelper = require('../functions/helper-price')
+const cryptoService = require('../services/service-crypto')
 
 const Discord = require('discord.js')
 const fetch = require('node-fetch');
 
 exports.run = async (client, message, args) => {
-    let arg1 = command.getOption(args, 1);   
-
-    if(arg1 == "" || arg1 == "help"){
-        handleHelp(message, args)
-    }
-    else{
-        handleCoin(message, args)
-    }
-
+//   var results = await cryptoService.get("ada", "BINANCE");
+//   console.log(results);
 }
 
 const handleHelp = (message, args) => {

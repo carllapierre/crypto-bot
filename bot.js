@@ -22,6 +22,18 @@ fs.readdir('./commands', (err, files) => {
     }
 })
 
+fs.readdir('./aliases/', (err, files) => {
+    try {
+        files.forEach(file => {
+            var prop = require(`./aliases/${file}`)
+            client.commands[file.split('.')[0]] = prop
+        })
+    } catch (err) {
+        console.log(err)
+    }
+})
+
+
 // Load all commands into the client's events object from the /events/ folder.
 client.events = {}
 fs.readdir('./events', (err, files) => {

@@ -13,6 +13,23 @@ exports.getSymbol = (arg) => {
     return symbol.toUpperCase();
 }
 
+//looks through alias list to try and map words to symbols
+exports.sanitize = (symbol) => {
+
+    symbol = symbol.toLowerCase();
+    mapper.symbols.forEach(aliasSymbol => {
+        aliasSymbol.aliases.forEach(alias => {
+            if(alias.toLowerCase() == symbol){
+                symbol = aSymbol.symbol;
+                return 
+            }
+        })
+    });
+    return symbol.toUpperCase();
+}
+
+
+
 exports.getTickerInfo = (symbol) => {
     if(symbol.toLowerCase() == "usdtusdt")
     {
@@ -24,20 +41,6 @@ exports.getTickerInfo = (symbol) => {
 
     return json;
 }
-
-exports.getTickerInfoZap = () => {
-    var res= request('GET',`https://api.coingecko.com/api/v3/simple/price?ids=zap&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true`)
-    var json = JSON.parse(res.getBody('utf8'))
-    
-    return {
-        lastPrice: `${json.zap.usd}`,
-        highPrice:"0",
-        lowPrice:"0",
-        priceChangePercent: json.zap.usd_24h_change,
-        volume:`${json.zap.usd_24h_vol}` 
-    };
-}
-
 
 exports.findSymbolOnExchange = (symbol, baseAsset) => {
     var exInfo = getExchangeInfo()

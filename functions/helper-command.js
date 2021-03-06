@@ -216,7 +216,7 @@ const iconExists = (symbol) => {
     try {
         return fs.existsSync(`${iconPath}${symbol.toLowerCase()}.png`)  
     } catch(err) {
-    console.error(err)
+        console.error(err)
     }
 }
 
