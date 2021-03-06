@@ -47,6 +47,14 @@ const get = async (symbol, exchange, quoteAsset) =>
     return info
 }
 
+
+//returns crypto info
+const top = async (count) =>
+{
+
+}
+
+
 // //returns url for 24 chart
 // const get24hChart = async (symbol) =>
 // {
@@ -79,4 +87,4 @@ const getCryptoLogo = async (symbol) => {
     });
 }
 
-module.exports = {get, find}
+module.exports = {get, find, top}
