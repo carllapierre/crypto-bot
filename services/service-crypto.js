@@ -8,8 +8,8 @@ const provGecko   = require("./providers/crypto/provider-gecko")
 const helpSymbol  = require("../functions/helper-symbol")
 
 const EXCHANGE_LIST = {
+   GECKO   : provGecko,
    BINANCE : provBinance,
-   GECKO   : provGecko
 }
 
 const BASE_ASSET = "USD";
@@ -19,36 +19,42 @@ const LOGO_PATH  = "./content/coin-images/"
 const find = async (symbol) =>
 {
     symbol = helpSymbol.sanitize(symbol)
-    for (const [key, exchange] of Object.entries(EXCHANGE_LIST)) {
-        info = exchange.find(symbol)
+    for (const [key, provider] of Object.entries(EXCHANGE_LIST)) {
+        info = await provider.find(symbol)
         if(info){
-            info = {...info, exchange: key}
-            break
+            return {
+                ...info,
+                exchange: key
+            }
         }
     }
-    return info
 }
 
 //returns crypto info
-const get = async (symbol, exchange, quoteAsset) =>
+const get = async (id, exchange, quoteAsset) =>
 {
     if(!quoteAsset)
         quoteAsset = BASE_ASSET
 
-    symbol = helpSymbol.sanitize(symbol)
-    var info = await EXCHANGE_LIST[exchange].get(symbol, quoteAsset);
-    if(info)
+    id = helpSymbol.sanitize(id)
+
+    var info = await EXCHANGE_LIST[exchange].get(id, quoteAsset);
+    if(info && !info.logo)
     {
-        info = {
-            ...info,
-            logo: getCryptoLogo(symbol)
+        logo = await getCryptoLogo(info.symbol);
+
+        if(logo){
+            info = {
+                ...info,
+                logo: logo 
+            }
         }
     }
     return info
 }
 
 
-//returns crypto info
+//returns top x in market cap
 const top = async (count) =>
 {
 
@@ -67,24 +73,16 @@ const top = async (count) =>
 
 // }
 
-const getCryptoLogo = async (symbol) => {
+const getCryptoLogo = (symbol) => {
 
     var fullpath = `${LOGO_PATH}${symbol.toLowerCase()}.png`;
-    fs.stat(fullpath , function(err, stat) {
-        console.log(err)
-        if(!err) {
-            return {
-                path: fullpath,
-                source: "local"
-            }
-        } else{
-            // file does not exist
-            return {
-                path: null,
-                source: null
-            }
+
+    if (fs.existsSync(fullpath)) {
+        return {
+            path: fullpath,
+            source: "local"
         }
-    });
+    }
 }
 
 module.exports = {get, find, top}

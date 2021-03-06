@@ -7,8 +7,10 @@ const Discord = require('discord.js')
 const fetch = require('node-fetch');
 
 exports.run = async (client, message, args) => {
-//   var results = await cryptoService.get("ada", "BINANCE");
-//   console.log(results);
+  var results = await cryptoService.get("cardano", "GECKO");
+  console.log(results);
+  results = await cryptoService.get("ada", "BINANCE");
+  console.log(results);
 }
 
 const handleHelp = (message, args) => {

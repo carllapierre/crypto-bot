@@ -1,37 +1,43 @@
 const request = require('sync-request')
 
 const API_ENDPOINT = "https://api.coingecko.com/api/v3"
-const API_TICKER   = "/simple/price?ids=" //{symbol}
-const API_TICKER_AFTER = "&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true"
+const API_TICKER   = "/coins/" //{id}
+const API_TICKER_AFTER = "?localization=false&community_data=false&developer_data=false"
+const API_LIST     = "/coins/list"
 
 exports.find = async (symbol) =>
 {
-    
+    var res= request('GET',`${API_ENDPOINT}${API_LIST}`)
+    var json = JSON.parse(res.getBody('utf8'))
+    var coin = json.find(x=>x.symbol.toLowerCase() == symbol.toLowerCase())
+
+    if(coin)
+        return {
+            id: coin.id,
+            quoteAsset: "usd"
+        } 
 }
 
-exports.get = async (symbol, quoteAsset) =>
+exports.get = async (id, quoteAsset) =>
 {
     var res= request('GET',`${API_ENDPOINT}${API_TICKER}${id.toLowerCase()}${API_TICKER_AFTER}`)
     var json = JSON.parse(res.getBody('utf8'))
     
-    if(!json[id.toLowerCase()])
+    if(!json.symbol)
         return;
+
+    var lowerQuote = quoteAsset.toLowerCase()
+
     return {
-
-        symbol: symbol,
+        symbol: json.symbol.toUpperCase(),
         quoteAsset: quoteAsset,
-        percentChange: json.priceChangePercent,
-        lastPrice: `${json[id.toLowerCase()].usd}`,
-        volume: json.volume,
-        high24: json.highPrice,
-        low24: json.lowPrice
-
-        // lastPrice: `${json[id.toLowerCase()].usd}`,
-        // highPrice:"N/A",
-        // lowPrice:"N/A",
-        // priceChangePercent: json[id.toLowerCase()].usd_24h_change,
-        // volume: `${json[id.toLowerCase()].usd_24h_vol}`
+        percentChange: `${json.market_data.price_change_percentage_24h}`,
+        high24:        `${json.market_data.high_24h[lowerQuote]}`,
+        low24:         `${json.market_data.low_24h[lowerQuote]}`,
+        lastPrice:     `${json.market_data.current_price[lowerQuote]}`,
+        logo: {
+            path: json.image.small,
+            source: "web"
+        }
     };
-    
-    
 }
