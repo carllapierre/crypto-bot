@@ -20,7 +20,7 @@ exports.sanitize = (symbol) => {
     mapper.symbols.forEach(aliasSymbol => {
         aliasSymbol.aliases.forEach(alias => {
             if(alias.toLowerCase() == symbol){
-                symbol = aSymbol.symbol;
+                symbol = aliasSymbol.symbol;
                 return 
             }
         })
@@ -48,7 +48,6 @@ exports.findSymbolOnExchange = (symbol, baseAsset) => {
 
     //prioritize base asset
     var coin = exInfo.symbols.find(x=>x.status == 'TRADING' && x.baseAsset == symbol && x.quoteAsset == baseAsset)
-    console.log(baseAsset)
     if(!coin){
         coin = exInfo.symbols.find(x=>x.status == 'TRADING' && x.baseAsset == symbol)
     }
