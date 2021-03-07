@@ -54,6 +54,7 @@ exports.sendHelp = (message, commandObj) => {
 
 }
 
+
 exports.alertCoin = (message, response, symbol, currency) => {
     
     let price = priceHelper.getFormattedPrice(response.lastPrice) 

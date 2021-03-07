@@ -6,10 +6,13 @@ const provGecko   = require("./providers/crypto/provider-gecko")
 
 //HELPERS
 const helpSymbol  = require("../functions/helper-symbol")
+const helpPrice   = require('../functions/helper-price')
+
 
 const EXCHANGE_LIST = {
-   GECKO   : provGecko,
    BINANCE : provBinance,
+
+   GECKO   : provGecko,
 }
 
 const BASE_ASSET = "USD";
@@ -19,12 +22,13 @@ const LOGO_PATH  = "./content/coin-images/"
 const find = async (symbol) =>
 {
     symbol = helpSymbol.sanitize(symbol)
+
     for (const [key, provider] of Object.entries(EXCHANGE_LIST)) {
         info = await provider.find(symbol)
         if(info){
             return {
                 ...info,
-                exchange: key
+                source: key
             }
         }
     }
@@ -36,20 +40,26 @@ const get = async (id, exchange, quoteAsset) =>
     if(!quoteAsset)
         quoteAsset = BASE_ASSET
 
-    id = helpSymbol.sanitize(id)
-
     var info = await EXCHANGE_LIST[exchange].get(id, quoteAsset);
-    if(info && !info.logo)
-    {
-        logo = await getCryptoLogo(info.symbol);
 
-        if(logo){
-            info = {
-                ...info,
-                logo: logo 
+    if(info)
+    {
+        info.lastPrice       = helpPrice.getFormattedPrice(info.lastPrice) 
+        info.high24          = helpPrice.getFormattedPrice(info.high24)
+        info.low24           = helpPrice.getFormattedPrice(info.low24)
+        
+        if(!info.logo)
+        {
+            logo = await getCryptoLogo(info.symbol);
+            if(logo){
+                info = {
+                    ...info,
+                    logo: logo 
+                }
             }
         }
     }
+
     return info
 }
 
