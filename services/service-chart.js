@@ -5,7 +5,7 @@ const newOutlabelPieChart = async (data, labels, sliceBGColor, width = 700, heig
     return await provQuickChart.createOutlabeledPieChart(data, labels, sliceBGColor, width, height, backgroundColor);
 }
 
-const lineBarGraph = async (dataLine, dataBar, labels, lineName = '', barName = '', lineColor = 'rgb(59, 67, 218)', barColor = 'rgba(220, 99, 47, 0.30)', chartTitle = '', width = 700, height = 500, backgroundColor = 'transparent') => {
+const lineBarGraph = async (dataLine, dataBar, labels, lineName = '', barName = '', lineColor = 'rgb(59, 67, 218)', barColor = 'rgba(63, 225, 97, 0.20)', chartTitle = '', width = 700, height = 500, backgroundColor = 'transparent') => {
 
     const chart = new QuickChart();
 
@@ -37,7 +37,8 @@ const lineBarGraph = async (dataLine, dataBar, labels, lineName = '', barName = 
         }, "options": {
             "title": {
               "display": true,
-              "text": chartTitle
+              "text": chartTitle,
+              fontSize: 20,
             },
             "tooltips": {
               "mode": "index",
@@ -51,6 +52,7 @@ const lineBarGraph = async (dataLine, dataBar, labels, lineName = '', barName = 
                   "display": true,
                   "position": "left",
                   ticks: {
+                      //min: Math.min(...dataLine)/2,
                       fontColor: lineColor,
                       callback: (val) => {
                           return "$" + val;
@@ -66,9 +68,15 @@ const lineBarGraph = async (dataLine, dataBar, labels, lineName = '', barName = 
                     "drawOnChartArea": false
                   },
                   ticks: {
-                    fontColor: 'rgb(220, 99, 47)',
+                    min: 0,
+                    fontColor: 'rgb(63, 225, 97)',
                     callback: (val) => {
-                        return (val > 1000 ? val/1000 + 'k' : val)
+                        if (val > 1000000) {
+                          return val/1000000 + 'M';
+                        } else if (val > 1000) {
+                          return val/1000 + 'k';
+                        }
+                        return val
                     }
                 }
                 }
@@ -77,7 +85,7 @@ const lineBarGraph = async (dataLine, dataBar, labels, lineName = '', barName = 
         }
     }).setWidth(width).setHeight(height).setBackgroundColor(backgroundColor);
 
-    return await chart;
+    return chart;
     
 }
 

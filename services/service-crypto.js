@@ -95,4 +95,13 @@ const getCryptoLogo = (symbol) => {
     }
 }
 
-module.exports = {get, find, top}
+const getKlineData = async (symbol, exchange, quoteAsset, interval, startTime, endTime, limit) => {
+    if(!quoteAsset)
+        quoteAsset = BASE_ASSET
+
+    var info = await EXCHANGE_LIST[exchange].getKlineInfo(symbol, quoteAsset, interval, startTime, endTime, limit);
+
+    return info;
+}
+
+module.exports = {get, find, top, getKlineData}
