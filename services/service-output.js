@@ -7,4 +7,17 @@ const getEmbed = (obj) =>
     return embed;
 }
 
-module.exports = {getEmbed}
+const getError = (error) =>
+{
+    var msg = "It seems I'm a dumb bot. :tired_face:"
+    if(error && error != "")
+        msg = error
+
+    var embed = getEmbed();
+    embed.setColor('#ffff00');
+    embed.addField("Crypto bot malfunction! ",`${msg}`);
+
+    return embed;
+}
+
+module.exports = {getEmbed, getError}

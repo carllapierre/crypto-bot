@@ -7,12 +7,12 @@ const provGecko   = require("./providers/crypto/provider-gecko")
 //HELPERS
 const helpSymbol  = require("../functions/helper-symbol")
 const helpPrice   = require('../functions/helper-price')
+const { inflate } = require('zlib')
 
 
 const EXCHANGE_LIST = {
-   BINANCE : provBinance,
-
    GECKO   : provGecko,
+   BINANCE : provBinance,
 }
 
 const BASE_ASSET = "USD";
@@ -35,12 +35,12 @@ const find = async (symbol) =>
 }
 
 //returns crypto info
-const get = async (id, exchange, quoteAsset) =>
+const get = async (idens, exchange, quoteAsset) =>
 {
     if(!quoteAsset)
         quoteAsset = BASE_ASSET
 
-    var info = await EXCHANGE_LIST[exchange].get(id, quoteAsset);
+    var info = await EXCHANGE_LIST[exchange].get(idens, quoteAsset);
 
     if(info)
     {
@@ -95,12 +95,18 @@ const getCryptoLogo = (symbol) => {
     }
 }
 
-const getKlineData = async (symbol, exchange, quoteAsset, interval, startTime, endTime, limit) => {
+const getKlineData = async (symbol, quoteAsset, interval= "1h", startTime, endTime, limit = "24") => {
+
     if(!quoteAsset)
         quoteAsset = BASE_ASSET
 
-    var info = await EXCHANGE_LIST[exchange].getKlineInfo(symbol, quoteAsset, interval, startTime, endTime, limit);
+    for (const [key, provider] of Object.entries(EXCHANGE_LIST)) {
+        info = await provider.getKlineInfo(symbol, quoteAsset, interval, startTime, endTime, limit);
 
+        if(info){
+            return info
+        }
+    }
     return info;
 }
 

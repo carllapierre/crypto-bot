@@ -1,59 +1,18 @@
 const cryptoService     = require('../services/service-crypto');
 const chartService      = require('../services/service-chart');
-const outputService     = require('../services/service-output');
 
-exports.create = async (message, parsed) => {
-
-    var timeArgument;
-    var crypto;
-    var timeInterval;
-    var limit;
-
-    for (var i = 0; i < parsed.arguments.length; i++) {
-        if (parsed.arguments[i].type === "timeInterval")
-            timeArgument = parsed.arguments[i];
-        if (parsed.arguments[i].type === "crypto")
-            crypto = parsed.arguments[i];
-    }
-
-    switch(timeArgument.value[timeArgument.value.length-1]) {
-        case 'h':
-            timeInterval = "1h";
-            break;
-        case 'd':
-            timeInterval = "1d";
-            break;
-        case 'm':
-            timeInterval = "1m";
-            break;
-        case 's':
-            timeInterval = "easteregg";
-            break;
-        default:
-            timeInterval = "1d";
-    }
-
-    var slice = timeArgument.value.slice(0, timeArgument.value.length - 1);
-    limit = parseInt(slice);
+exports.getChartUrl = async (value, quoteAsset, interval = "1h", limit = "24") => {
 
     var line = [];
     var bar = [];
     var labels = [];
-    var output = outputService.getEmbed();
 
-    if (timeInterval === "easteregg") {
-        message.channel.send("Nobody needs to know price changes by seconds... Why are you so addicted?");
-        message.channel.send('https://tenor.com/view/stop-it-get-some-help-gif-7929301');
-        return;
-    }
-
-    var res = await cryptoService.getKlineData(crypto.value, crypto.source, crypto.quoteAsset, timeInterval, undefined, undefined, limit);
-
+    var res = await cryptoService.getKlineData(value, quoteAsset, interval, undefined, undefined, limit);
     if (res) {
         for (var i = 0; i < res.length; i++) {
             line.push(res[i].closePrice);
             bar.push(res[i].volume);
-            switch (timeInterval) {
+            switch (interval) {
                 case '1h':
                     labels.push(formatSingleEntry(res[i].closeTime.getDate()) + ' - ' + formatSingleEntry(res[i].closeTime.getHours()) + ":00");
                     break;
@@ -67,16 +26,41 @@ exports.create = async (message, parsed) => {
                     labels.push(formatSingleEntry(res[i].closeTime.getDate()) + ' - ' + formatSingleEntry(res[i].closeTime.getHours()) + ":00");
             }
         }
-        var chart = await chartService.lineBarGraph(line, bar, labels, `Price (in ${crypto.quoteAsset})`, "Volume", "#269398", undefined, `Price of ${crypto.value} with intervals of ${timeInterval} (UTC-London)`);
-        output.setImage(await chart.getShortUrl());
-        message.channel.send(output);
+        var chart = await chartService.lineBarGraph(line, bar, labels, `Price (in ${quoteAsset})`, "Volume", "#269398", undefined, `Price of ${value} with intervals of ${interval} (UTC-London)`);
+        return await chart.getShortUrl();
+
     } else {
-        output.setColor('#ffff00');
-        output.addField("Error",`Sorry, there was a problem searching for ${crypto.value}`);
-        output.setImage('https://cdn.discordapp.com/attachments/814697936113500223/818281855924961280/graph.png');
-        message.channel.send(output);
+        return 'https://cdn.discordapp.com/attachments/814697936113500223/818281855924961280/graph.png';
     }
-    
+  
+}
+
+
+exports.isInterval = (str) =>
+{
+    var timeInterval;
+    var char = str[str.length-1]
+    switch(char) {
+        case 'h':
+        case 'd':
+        case 'm':
+            timeInterval = "1" + char;
+            break;
+        case 's':
+            timeInterval = "easteregg";
+            break;
+    }
+
+    var slice = str.slice(0, str.length - 1);
+    var limit;
+    if(!isNaN(slice))
+        limit = parseInt(slice);
+
+    if(timeInterval && limit)
+        return {
+            interval: timeInterval,
+            limit: limit
+        }
 }
 
 function formatDate(date) {

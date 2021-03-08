@@ -29,7 +29,7 @@ exports.getSupportedFiats = () => {
 
 const supportedFiats = [
     {
-        fiat: "USDT",
+        fiat: "USD",
         display: "USD"
     },
     {

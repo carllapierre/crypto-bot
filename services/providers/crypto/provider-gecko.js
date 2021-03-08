@@ -5,7 +5,7 @@ const API_TICKER   = "/coins/" //{id}
 const API_TICKER_AFTER = "?localization=false&community_data=false&developer_data=false"
 const API_LIST     = "/coins/list"
 
-exports.find = async (symbol) =>
+const find = async (symbol) =>
 {
     var res= request('GET',`${API_ENDPOINT}${API_LIST}`)
     var json = JSON.parse(res.getBody('utf8'))
@@ -13,18 +13,24 @@ exports.find = async (symbol) =>
 
     if(coin)
         return {
+            symbol: symbol,
             id: coin.id,
             quoteAsset: "usd"
         } 
 }
 
-exports.get = async (id, quoteAsset) =>
+const get = async (symbol, quoteAsset) =>
 {
-    var res= request('GET',`${API_ENDPOINT}${API_TICKER}${id.toLowerCase()}${API_TICKER_AFTER}`)
+    //need to pull the id if possible
+    var result = await find(symbol);
+    if(!(result && result.id))
+        return
+
+    var res= request('GET',`${API_ENDPOINT}${API_TICKER}${result.id.toLowerCase()}${API_TICKER_AFTER}`)
     var json = JSON.parse(res.getBody('utf8'))
     
     if(!json.symbol)
-        return;
+        return
 
     var lowerQuote = quoteAsset.toLowerCase()
 
@@ -42,6 +48,8 @@ exports.get = async (id, quoteAsset) =>
     };
 }
 
-exports.getKlineInfo = async (symbol, quoteAsset, interval, startTime, endTime, limit) => {
+const getKlineInfo = async (symbol, quoteAsset, interval, startTime, endTime, limit) => {
     return null;
 }
+
+module.exports = {get, find, getKlineInfo}
