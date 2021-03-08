@@ -2,6 +2,10 @@ require('dotenv').config()
 const Discord = require('discord.js')
 const mongoose = require('./config/mongoose');
 const fs = require('fs')
+const tickerService = require('./services/service-tickerwatch')
+
+tickerService.init(process.env.BOT_ADA, "ADA")
+tickerService.init(process.env.BOT_XRP, "XRP")
 
 // Create a Discord.Client() instance.
 const client = new Discord.Client()
