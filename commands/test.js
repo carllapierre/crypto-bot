@@ -15,5 +15,5 @@ exports.run = async (client, message, args) => {
     }
 
     var chart = await test2.lineBarGraph(line, bar, labels, "Price", "Trades QTY", "#269398", undefined, `Price of ADA with interval of 1 hour`);
-    console.log(await chart.getShortUrl());
+
 }

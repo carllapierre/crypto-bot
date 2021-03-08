@@ -181,7 +181,6 @@ const analyzeParams = (args) => {
         })
 
     }
-    console.log(paramInfo)
 
     //analyze arguments and give a command type
     switch (paramInfo.arguments.length)

@@ -45,6 +45,13 @@ const lineBarGraph = async (dataLine, dataBar, labels, lineName = '', barName = 
               "intersect": true
             },
             "scales": {
+              "xAxes": [{
+                "font": {
+                  "resizable": true,
+                  // "minSize": 6,
+                  // "maxSize": 20
+                },
+              }],
               "yAxes": [
                 {
                   "id": "y",
@@ -52,7 +59,6 @@ const lineBarGraph = async (dataLine, dataBar, labels, lineName = '', barName = 
                   "display": true,
                   "position": "left",
                   ticks: {
-                      //min: Math.min(...dataLine)/2,
                       fontColor: lineColor,
                       callback: (val) => {
                           return "$" + val;

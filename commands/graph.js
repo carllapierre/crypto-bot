@@ -15,15 +15,6 @@ exports.run = async (client, message, args) => {
         case "graph":
             graphHelper.create(message, parsed)
             break
-        // case "trending":
-        //     handleTrending(message, parsed)
-        //     break
-        // case "conversion":
-        //     handleConversion(message, parsed)
-        //     break
-        // case "specialbtc":
-        //     handleSpecialBtc(message)
-        //     break
         default:
             command.sendHelp(message, graphCommand)
     }
@@ -67,7 +58,7 @@ const analyzeParams = async (args) => {
         }
 
         // Check if param is a time interval (for graph)
-        if ((param[param.length-1] === 'h' || param[param.length-1] === 'd' || param[param.length-1] === 'M') && param.length > 1)  {
+        if ((param[param.length-1] === 'h' || param[param.length-1] === 'd' || param[param.length-1] === 'm' || param[param.length-1] === 's') && param.length > 1)  {
             var slice = param.slice(0, param.length - 1);
             if(!isNaN(slice) && slice != "") {
                 if (paramInfo.type === "unknown") {
@@ -116,16 +107,11 @@ let graphCommand = {
         description: "Will return a list of possible commands.",
         params: '',
     },    
-    // {
-    //     aliases: ['trending'],
-    //     description: "Will return top 7 trending coins via CoinGecko",
-    //     params: '',
-    // },
-    // {
-    //     aliases: ['<cryptocurrency>'],
-    //     description: "Will return the value of the coin converted to USD by default. Some conversions to USD may not be supported.",
-    //     params: '',
-    // },
+    {
+        aliases: ['<time interval> <cryptocurrency>'],
+        description: "Time interval in minutes, hours or days (example: 30m, 20h, 10d, etc)",
+        params: '',
+    },
     // {
     //     aliases: ['<cryptocurrency> <fiat | btc>'],
     //     description: "Will return the value of the coin converted to the specified currency. Some conversions may not be supported.",
