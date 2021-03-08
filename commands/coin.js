@@ -3,6 +3,7 @@ const priceHelper   = require('../functions/helper-price')
 const graphHelper   = require('../functions/helper-graph')
 const outputService = require('../services/service-output')
 const cryptoService = require('../services/service-crypto')
+const provExchange  = require('../services/providers/fiat/provider-exchange')
 
 exports.run = async (client, message, args) => {
     var parsed = await analyzeParams(args)
@@ -33,6 +34,16 @@ const handleInfo = async (message, parsed) => {
 
     var output;
     var tickerInfo = await cryptoService.get(crypto.value, crypto.source)
+
+    if(fiat)
+    {
+        var rate = provExchange.getExchangeRates(fiat.value)
+        tickerInfo = alterPrice(tickerInfo, rate)
+        tickerInfo = {...tickerInfo, trueQuote: fiat.value.toUpperCase()}
+    }else
+    {
+        tickerInfo = {...tickerInfo, trueQuote: tickerInfo.quoteAsset}
+    }
 
     if(tickerInfo)
         output = getCoinOutput(message, tickerInfo)   
@@ -180,7 +191,7 @@ const getCoinOutput = (message, info) => {
     embed.addField("24h High"  , info.high24, true)
     embed.addField("24h Low"   , info.low24,  true) 
 
-    var price = `${info.symbol} Price: ${info.lastPrice} ${info.quoteAsset}`
+    var price = `${info.symbol} Price: ${info.lastPrice} ${info.trueQuote}`
     if(info.logo && info.logo.source == "local"){
         embed.attachFile(info.logo.path)
         embed.setAuthor(price, `attachment://${info.symbol.toLowerCase()}.png`)
@@ -191,4 +202,11 @@ const getCoinOutput = (message, info) => {
         embed.setAuthor(price)
     
     return embed
+}
+
+const alterPrice = (ticker, price) => {
+    ticker.lastPrice = priceHelper.getFormattedPrice( parseFloat(ticker.lastPrice) * price )
+    ticker.high24    = priceHelper.getFormattedPrice( parseFloat(ticker.high24) * price)
+    ticker.low24     = priceHelper.getFormattedPrice( parseFloat(ticker.low24)  * price)
+    return ticker
 }
