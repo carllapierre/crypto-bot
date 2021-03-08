@@ -41,3 +41,7 @@ exports.get = async (id, quoteAsset) =>
         }
     };
 }
+
+exports.getKlineInfo = async (symbol, quoteAsset, interval, startTime, endTime, limit) => {
+    return null;
+}

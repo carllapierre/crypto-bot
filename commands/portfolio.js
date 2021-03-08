@@ -8,7 +8,7 @@ exports.run = async (client, message, args) => {
 
     try {
         var parsed = analyzeParams(args)
-        console.log(parsed)
+
         if(parsed.error){
             command.alert(message, parsed.error);
         }
