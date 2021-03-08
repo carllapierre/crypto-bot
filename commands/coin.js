@@ -27,26 +27,26 @@ const handleHelp = (message) => {
 }
 
 const handleInfo = async (message, parsed) => {
+
     var crypto   = parsed.arguments.find(x=>x.type=="crypto")
     var timeInterval = parsed.arguments.find(x=>x.type=="interval")
     var graph    = parsed.arguments.find(x=>x.type=="graph")
     var fiat     = parsed.arguments.find(x=>x.type=="fiat")
 
     var output;
-    var tickerInfo = await cryptoService.get(crypto.value, crypto.source)
+    var tickerInfo = await cryptoService.get(crypto.value, crypto.source, crypto.quoteAsset)
 
     if(fiat)
     {
         var rate = provExchange.getExchangeRates(fiat.value)
         tickerInfo = alterPrice(tickerInfo, rate)
-        tickerInfo = {...tickerInfo, trueQuote: fiat.value.toUpperCase()}
+        tickerInfo = {...tickerInfo, trueQuote: fiat.value}
     }else
     {
         tickerInfo = {...tickerInfo, trueQuote: tickerInfo.quoteAsset}
     }
 
-    if(tickerInfo)
-        output = getCoinOutput(message, tickerInfo)   
+    output = getCoinOutput(message, tickerInfo)   
 
     if(timeInterval)
     {
@@ -191,7 +191,7 @@ const getCoinOutput = (message, info) => {
     embed.addField("24h High"  , info.high24, true)
     embed.addField("24h Low"   , info.low24,  true) 
 
-    var price = `${info.symbol} Price: ${info.lastPrice} ${info.trueQuote}`
+    var price = `${info.symbol} Price: ${info.lastPrice} ${info.trueQuote.toUpperCase()}`
     if(info.logo && info.logo.source == "local"){
         embed.attachFile(info.logo.path)
         embed.setAuthor(price, `attachment://${info.symbol.toLowerCase()}.png`)
