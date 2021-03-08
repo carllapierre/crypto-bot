@@ -1,6 +1,9 @@
 const request = require('sync-request')
 
 exports.getFormattedPrice = (price) => {
+    if (typeof price === 'string' || price instanceof String)
+        price = parseFloat(price)
+
     if(price >= 1)
         return Number.parseFloat(price).toFixed(2)
     return Number.parseFloat(price).toPrecision(2)
@@ -20,19 +23,13 @@ exports.isSupportedFiat = (currency) => {
     return false
 }
 
-exports.getFormattedPrice = (price) => {
-    if(price >= 1)
-        return Number.parseFloat(price).toFixed(2)
-    return Number.parseFloat(price).toPrecision(2)
-}
-
 exports.getSupportedFiats = () => {
     return supportedFiats;
 }
 
 const supportedFiats = [
     {
-        fiat: "USDT",
+        fiat: "USD",
         display: "USD"
     },
     {

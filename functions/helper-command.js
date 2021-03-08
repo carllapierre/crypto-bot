@@ -54,6 +54,7 @@ exports.sendHelp = (message, commandObj) => {
 
 }
 
+
 exports.alertCoin = (message, response, symbol, currency) => {
     
     let price = priceHelper.getFormattedPrice(response.lastPrice) 
@@ -216,7 +217,7 @@ const iconExists = (symbol) => {
     try {
         return fs.existsSync(`${iconPath}${symbol.toLowerCase()}.png`)  
     } catch(err) {
-    console.error(err)
+        console.error(err)
     }
 }
 

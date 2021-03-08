@@ -5,6 +5,7 @@ const Discord = require('discord.js')
 const helper = require('./helper-color.js');
 const QuickChart = require('quickchart-js');
 const command = require('./helper-command')
+const chartService = require('../services/service-chart');
 
 exports.show = async (message) => {
     const wallet = await getOrCreatePortfolio(message.author.id);
@@ -111,8 +112,6 @@ const getWalletChartEmbed = async (wallet) => {
 
     if (wallet.holding.size) {
 
-        const chart = new QuickChart();
-
         var data = [];
         var label = [];
         var bgColor = [];
@@ -147,41 +146,9 @@ const getWalletChartEmbed = async (wallet) => {
         }
 
         biggestValue = Number.parseFloat(biggestValue*100/totalValue).toFixed(2);
-
-        chart.setConfig({
-            type: 'outlabeledPie',
-            data : {
-                datasets: [{data: data, backgroundColor: bgColor}],
-                labels: label,
-            },
-            options: {
-                rotation: Math.PI,
-                plugins: {
-                    borderRadius: 17,
-                    borderWidth: 2,
-                    padding: 3,
-                    
-                    "legend": false,
-                    "outlabels": {
-                        "text": "%l (%p)",
-                        "color": "black",
-                        "stretch": 55,
-                        "font": {
-                          "resizable": true,
-                          "minSize": 16,
-                          "maxSize": 20
-                        }, 
-
-                      }
-                },
-                legend: {
-                    labels: {
-                        fontColor: '#FFF'
-                    }
-                }
-            }
-        }).setWidth(700).setHeight(500).setBackgroundColor('transparent');
         
+        const chart = await chartService.newOutlabelPieChart(data, label, bgColor);
+
         embed.setImage(chart.getUrl());
         embed.addField("Your biggest contributor", `Your ${biggestCrypto} is your largest holding, representing ${biggestValue}% of your portfolio!`);
     } else {

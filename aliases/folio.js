@@ -1,4 +1,4 @@
-const portfolioCommand = require('./portfolio')
+const portfolioCommand = require('../commands/portfolio')
 
 //redirect
 exports.run = async (client, message, args) => {
