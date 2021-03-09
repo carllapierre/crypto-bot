@@ -11,8 +11,9 @@ const { inflate } = require('zlib')
 
 
 const EXCHANGE_LIST = {
-   GECKO   : provGecko,
    BINANCE : provBinance,
+   GECKO   : provGecko,
+
 }
 
 const BASE_ASSET = "USD";
