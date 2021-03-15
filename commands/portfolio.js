@@ -2,12 +2,14 @@ const command      = require('../functions/helper-command')
 const priceHelper = require('../functions/helper-price')
 const symbolHelper = require('../functions/helper-symbol')
 const controller = require('../functions/helper-portfolio')
+const { setMaxListeners } = require('../models/wallet.model')
+const cryptoService = require('../services/service-crypto')
 const BASE_ASSET    = "USDT"
 
 exports.run = async (client, message, args) => {
 
     try {
-        var parsed = analyzeParams(args)
+        var parsed = await analyzeParams(args)
 
         if(parsed.error){
             command.alert(message, parsed.error);
@@ -108,7 +110,7 @@ let portfolioCommand = {
 //3. 'Add': Will add specified crypto qty
 //4. 'Remove': Will remove specified crypto qty
 
-const analyzeParams = (args) => {
+const analyzeParams = async (args) => {
 
     var paramInfo = {
         type: "unknown",
@@ -183,28 +185,16 @@ const analyzeParams = (args) => {
                 continue;
             }
 
-            var symbol = symbolHelper.findSymbolOnExchange(param, BASE_ASSET);
-
+            var symbol = await cryptoService.find(param)
+            console.log(symbol)
             if(symbol){
                 paramInfo.arguments.push({
-                    source: "binance",
-                    value: param,
+                    source: symbol.source,
+                    value: symbol.symbol,
                     type: 'crypto',
                     quoteAsset: symbol.quoteAsset
                 })
                 continue;
-            }else
-            {
-                symbol = symbolHelper.getGeckoInfo(param);
-                if(symbol)
-                {
-                    paramInfo.arguments.push({
-                        source: "gecko",
-                        value: param,
-                        type: 'crypto',
-                        quoteAsset: 'usd'
-                    })
-                }
             }
 
             // If all fails, unknown argument.

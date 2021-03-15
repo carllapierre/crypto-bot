@@ -6,6 +6,7 @@ const helper = require('./helper-color.js');
 const QuickChart = require('quickchart-js');
 const command = require('./helper-command')
 const chartService = require('../services/service-chart');
+const cryptoService = require('../services/service-crypto')
 
 exports.show = async (message) => {
     const wallet = await getOrCreatePortfolio(message.author.id);
@@ -71,9 +72,11 @@ const getWalletEmbed = async (wallet) => {
         const exchange = (currency !== 'USDT' ? await priceHelper.getExchangeRate(currency) : 1);
 
         for (let [key, value] of wallet.holding) {
-            var response = await symbolHelper.getTickerInfo(key + 'USDT');
+
+            var hodlcoin = await cryptoService.find(key);
+            var response = await cryptoService.get(hodlcoin.symbol, hodlcoin.source) 
             var cryptoPrice = response.lastPrice * exchange;
-            var change24h = response.priceChangePercent;
+            var change24h = response.percentChange;
             var color = "";
             if (change24h >= 0) {
                 color = "cyan";
@@ -122,7 +125,8 @@ const getWalletChartEmbed = async (wallet) => {
 
         for (let [key, value] of wallet.holding) {
 
-            var response = await symbolHelper.getTickerInfo(key + 'USDT');        
+            var hodlcoin = await cryptoService.find(key);
+            var response = await cryptoService.get(hodlcoin.symbol, hodlcoin.source) 
             var cryptoPrice = response.lastPrice;
 
             label.push(key);
