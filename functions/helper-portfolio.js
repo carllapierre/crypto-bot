@@ -7,6 +7,8 @@ const QuickChart = require('quickchart-js');
 const command = require('./helper-command')
 const chartService = require('../services/service-chart');
 const cryptoService = require('../services/service-crypto')
+const outputService = require('../services/service-output');
+const { reset } = require('nodemon');
 
 exports.show = async (message) => {
     const wallet = await getOrCreatePortfolio(message.author.id);
@@ -21,6 +23,11 @@ exports.showPublic = async (message) => {
 exports.showChart = async (message) => {
     const wallet = await getOrCreatePortfolio(message.author.id);
     message.channel.send(await getWalletChartEmbed(wallet));
+}
+
+exports.showPrices = async (message) => {
+    const wallet = await getOrCreatePortfolio(message.author.id);
+    message.channel.send(await getWalletPriceEmbed(wallet));
 }
 
 exports.delete = async (message) => {
@@ -104,6 +111,44 @@ const getWalletEmbed = async (wallet) => {
     }
 
 }
+
+const getWalletPriceEmbed = async (wallet) => {
+
+    const embed = outputService.getEmbed({title: "Your portfolio's price action!", color: "BLUE", footer: "*Note: Only top 25 are shown"});
+            
+    if (wallet.holding.size) {
+        var coins = [];
+        var currency = wallet.preferences.currency;
+        const exchange = 1//(currency !== 'USDT' ? await priceHelper.getExchangeRate(currency) : 1);
+
+        for (let [key, value] of wallet.holding) {
+            var hodlcoin = await cryptoService.find(key);
+            var response = await cryptoService.get(hodlcoin.symbol, hodlcoin.source) 
+            if(response){
+                response.lastPrice = response.lastPrice * exchange;
+                coins.push(response);
+            }                
+        }
+
+        coins = coins.sort((a, b) =>{ 
+            return (b.percentChange - a.percentChange) 
+        })
+        coins = coins.slice(0, 25)
+
+        count=0;
+        coins.forEach(coin => {
+            count++;
+            embed.addField(`${count}. ${coin.symbol.toUpperCase()} - Price: ${priceHelper.getFormattedPrice(coin.lastPrice)} USD`, `${coin.percentChange>0?":green_square:":":red_square: "} 24h ${ (coin.percentChange>0? "+":"")+ Number.parseFloat(coin.percentChange).toFixed(2)}%`)            
+        });
+
+        return embed;
+    } else {
+        embed.addField("No coins?", "Add some coins to your portfolio! Try $portfolio help for more details.");
+        return embed;
+    }
+
+}
+
 
 const getWalletChartEmbed = async (wallet) => {
 

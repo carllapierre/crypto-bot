@@ -18,6 +18,9 @@ exports.run = async (client, message, args) => {
             case "help":
                 command.sendHelp(message, portfolioCommand)
                 break
+            case "prices":
+                controller.showPrices(message)
+                break
             case "show":
                 controller.show(message, parsed);
                 break
@@ -139,6 +142,11 @@ const analyzeParams = async (args) => {
 
     if(command.getOption(args, 1).toLowerCase() == "delete") {
         paramInfo.type = "delete"
+        return paramInfo;
+    }
+
+    if(command.getOption(args, 1).toLowerCase() == "prices" || command.getOption(args, 1).toLowerCase() == "price" || command.getOption(args, 1).toLowerCase() == "p") {
+        paramInfo.type = "prices"
         return paramInfo;
     }
 
