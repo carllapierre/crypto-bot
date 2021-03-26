@@ -6,6 +6,8 @@ const tickerService = require('./services/service-tickerwatch')
 
 tickerService.init(process.env.BOT_ADA, "ADA")
 tickerService.init(process.env.BOT_XRP, "XRP")
+tickerService.init(process.env.BOT_VET, "VET")
+tickerService.init(process.env.BOT_DOT, "DOT")
 
 // Create a Discord.Client() instance.
 const client = new Discord.Client()
