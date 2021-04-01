@@ -8,6 +8,7 @@ const command = require('./helper-command')
 const chartService = require('../services/service-chart');
 const cryptoService = require('../services/service-crypto')
 const outputService = require('../services/service-output');
+const forexProvider = require('../services/providers/fiat/provider-exchange')
 const { reset } = require('nodemon');
 
 exports.show = async (message) => {
@@ -76,7 +77,7 @@ const getWalletEmbed = async (wallet) => {
         var listOfValues = '';
         var totalValue = 0;
         var currency = wallet.preferences.currency;
-        const exchange = (currency !== 'USDT' ? await priceHelper.getExchangeRate(currency) : 1);
+        const exchange = (currency !== 'USDT' ? await forexProvider.getExchangeRates(currency) : 1);
 
         for (let [key, value] of wallet.holding) {
 
