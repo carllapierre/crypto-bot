@@ -25,7 +25,9 @@ const find = async (symbol) =>
 {
     symbol = helpSymbol.sanitize(symbol)
 
-    serviceCache.find(symbol)
+    var found = serviceCache.find(symbol)
+    if(found)
+        return found;
 
     for (const [key, provider] of Object.entries(EXCHANGE_LIST)) {
         info = await provider.find(symbol)
