@@ -1,5 +1,7 @@
 const fs = require('fs')
 
+const nodeCache = require( "node-cache" );
+
 //PROVIDERS
 const provBinance = require("./providers/crypto/provider-binance")
 const provGecko   = require("./providers/crypto/provider-gecko")
@@ -7,13 +9,12 @@ const provGecko   = require("./providers/crypto/provider-gecko")
 //HELPERS
 const helpSymbol  = require("../functions/helper-symbol")
 const helpPrice   = require('../functions/helper-price')
-const { inflate } = require('zlib')
 
+const serviceCache = require('../services/service-cache')
 
 const EXCHANGE_LIST = {
    BINANCE : provBinance,
    GECKO   : provGecko,
-
 }
 
 const BASE_ASSET = "USD";
@@ -24,13 +25,17 @@ const find = async (symbol) =>
 {
     symbol = helpSymbol.sanitize(symbol)
 
+    serviceCache.find(symbol)
+
     for (const [key, provider] of Object.entries(EXCHANGE_LIST)) {
         info = await provider.find(symbol)
         if(info){
-            return {
+            var obj = {
                 ...info,
                 source: key
             }
+            serviceCache.save(obj.symbol, obj)
+            return obj
         }
     }
 }
@@ -71,18 +76,6 @@ const top = async (count) =>
 
 }
 
-
-// //returns url for 24 chart
-// const get24hChart = async (symbol) =>
-// {
-
-// }
-
-// //returns url for 24 chart
-// const getMarketCap = async (symbol) =>
-// {
-
-// }
 
 const getCryptoLogo = (symbol) => {
 

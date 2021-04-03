@@ -3,6 +3,8 @@ const Discord = require('discord.js')
 const mongoose = require('./config/mongoose');
 const fs = require('fs')
 const tickerService = require('./services/service-tickerwatch')
+const nodeCache = require( "node-cache" );
+global.brain = new nodeCache();
 
 tickerService.init(process.env.BOT_ADA, "ADA")
 tickerService.init(process.env.BOT_XRP, "XRP")
