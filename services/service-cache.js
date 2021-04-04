@@ -5,11 +5,14 @@ const find = (symbol) =>
     return symb;
 }
 
-const save = (symbol, obj) =>
+const save = (symbol, obj, ttl) =>
 {
+    if(!ttl)
+        ttl = 0
+
     found =  find( symbol );
     if(!found){
-        brain.set( symbol, obj );
+        brain.set( symbol, obj, ttl );
     }
 }
 module.exports = {find, save}
