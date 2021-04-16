@@ -6,10 +6,11 @@ const tickerService = require('./services/service-tickerwatch')
 const nodeCache = require( "node-cache" );
 global.brain = new nodeCache();
 
-tickerService.init(process.env.BOT_ADA, "ADA")
-tickerService.init(process.env.BOT_XRP, "XRP")
-tickerService.init(process.env.BOT_VET, "VET")
-tickerService.init(process.env.BOT_DOT, "DOT")
+tickerService.init(process.env.BOT_ADA,  "ADA")
+tickerService.init(process.env.BOT_XRP,  "XRP")
+tickerService.init(process.env.BOT_VET,  "VET")
+tickerService.init(process.env.BOT_DOT,  "DOT")
+tickerService.init(process.env.BOT_DOGE, "DOGE")
 
 // Create a Discord.Client() instance.
 const client = new Discord.Client()
