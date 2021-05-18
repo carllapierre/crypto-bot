@@ -11,6 +11,7 @@ tickerService.init(process.env.BOT_XRP,  "XRP")
 tickerService.init(process.env.BOT_VET,  "VET")
 tickerService.init(process.env.BOT_DOT,  "DOT")
 tickerService.init(process.env.BOT_DOGE, "DOGE")
+tickerService.init(process.env.BOT_BNB, "BNB")
 
 // Create a Discord.Client() instance.
 const client = new Discord.Client()
