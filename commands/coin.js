@@ -5,9 +5,8 @@ const outputService = require('../services/service-output')
 const cryptoService = require('../services/service-crypto')
 const provExchange  = require('../services/providers/fiat/provider-exchange')
 
-exports.run = async (client, message, args) => {
+exports.run = async (client, message, args, override24) => {
     var parsed = await analyzeParams(args)
-
     if(parsed.error){
         message.channel.send(outputService.getError(parsed.error));
         return
@@ -15,7 +14,7 @@ exports.run = async (client, message, args) => {
 
     switch (parsed.type){
         case "info":
-            handleInfo(message, parsed)
+            handleInfo(message, parsed, override24)
             break
         default:
             handleHelp(message)
@@ -26,10 +25,13 @@ const handleHelp = (message) => {
     command.sendHelp(message, coinCommand)
 }
 
-const handleInfo = async (message, parsed) => {
+const handleInfo = async (message, parsed, override24) => {
 
     var crypto   = parsed.arguments.find(x=>x.type=="crypto")
     var timeInterval = parsed.arguments.find(x=>x.type=="interval")
+    if(override24){
+        timeInterval = { interval: '1h', limit: 24, type: 'interval' }
+    }
     var graph    = parsed.arguments.find(x=>x.type=="graph")
     var fiat     = parsed.arguments.find(x=>x.type=="fiat")
 
