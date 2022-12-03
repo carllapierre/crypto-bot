@@ -1,4 +1,4 @@
-
+// get hunted
 function changeColor(text, param) {
         switch (param.toLowerCase()){
             case "cyan":
